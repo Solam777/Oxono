@@ -141,6 +141,45 @@ D'accord ! Voici la traduction en gardant la structure avec les hashtags :
 # Q2 #
    It contains the entire string.
 
----
 
-Let me know if you need anything else!
+# Lambda #
+
+# Q1 # 
+ 1. filter(myList, p -> p.getFirstname().startsWith("J"))
+ 2. filter(myList,p -> p.getFirstname().startsWith("J") && p.getAge() < 50)
+
+# Q2 # 
+ 1. (word1, word2) -> word1.length() - word2.length()
+ 2. (word1, word2) -> word1.charAt(0) - word2.charAt(0)
+
+# Q3 # 
+ 1. 3, 8, and 9
+
+
+ # javafx-Base #
+
+ # Q1 #
+  1. v1 is the width and v2 is the height
+  2. A window with a transparent background.
+  3. setTop(helloText): This places the helloText at the top of the BorderPane, 
+     setBottom(helloText): This positions the helloText at the bottom of the BorderPane, 
+     setLeft(helloText): This places the helloText on the left side of the BorderPane, 
+     setRight(helloText): This positions the helloText on the right side of the BorderPane,
+
+ # Q2 #
+  1.  checkBox1 enabling/disabling components, checkBox2 acting as a visual indicator,
+      and checkBox3 having distinct initial states or labels, all influenced by their respective event handlers.
+
+   2. checkBox1 may not be centered and could be placed according to the default alignment rules (top-left for instance).
+      checkBox3 will also lose its center alignment and may appear in the default position dictated by the layout manager.
+
+
+
+
+
+
+
+
+
+
+

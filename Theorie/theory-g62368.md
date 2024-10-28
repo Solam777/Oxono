@@ -172,6 +172,17 @@ D'accord ! Voici la traduction en gardant la structure avec les hashtags :
 
    2. checkBox1 may not be centered and could be placed according to the default alignment rules (top-left for instance).
       checkBox3 will also lose its center alignment and may appear in the default position dictated by the layout manager.
+ # Q3 # 
+   1. we dont see, the word
+   2. the zord is saved
+ # Q4 # 
+   1. We create a new instance of a button named btnPrint, then assign a method to specify what it should do.
+
+ # Q5 # 
+   1. Automatically updates the UI when nodes are added or removed, supporting dynamic interfaces.
+      Simplifies data binding, eliminating the need for manual updates to the UI.
+      Provides direct access to child nodes, making it easy to build and modify complex layouts programmatically.
+
 
 
 

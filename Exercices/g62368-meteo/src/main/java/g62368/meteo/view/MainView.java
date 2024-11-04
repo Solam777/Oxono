@@ -45,7 +45,7 @@ public class MainView {
         weatherView.setName(value.locality());
         weatherView.setTempMin(value.tempMin());
         weatherView.setTempMax(value.tempMax());
-        weatherView.setImage(value.weatherCode());
+//        weatherView.setImage(value.weatherCode());
 
     }
     public void showError(String message) {

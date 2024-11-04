@@ -36,11 +36,12 @@ public class WeatherView {
     public void setImage(int weatherCode) {
         // Placeholder code for setting an image based on weatherCode
         // For example, you could load an image based on weatherCode
-         this.weatherImage.setImage(new Image("path/to/image" + weatherCode + ".png"));
+        Image image = new Image(Images.getImage(weatherCode));
+        weatherImage = new ImageView(image);
     }
 
     public VBox getView() {
         // Add the initialized components to the VBox
-        return new VBox(10, nameLabel, tempMinLabel, tempMaxLabel);
+        return new VBox(10, nameLabel, tempMinLabel, tempMaxLabel,weatherImage);
     }
 }

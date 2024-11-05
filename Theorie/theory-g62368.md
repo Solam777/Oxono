@@ -172,9 +172,11 @@ D'accord ! Voici la traduction en gardant la structure avec les hashtags :
 
    2. checkBox1 may not be centered and could be placed according to the default alignment rules (top-left for instance).
       checkBox3 will also lose its center alignment and may appear in the default position dictated by the layout manager.
+
  # Q3 # 
    1. we dont see, the word
    2. the zord is saved
+
  # Q4 # 
    1. We create a new instance of a button named btnPrint, then assign a method to specify what it should do.
 
@@ -182,6 +184,19 @@ D'accord ! Voici la traduction en gardant la structure avec les hashtags :
    1. Automatically updates the UI when nodes are added or removed, supporting dynamic interfaces.
       Simplifies data binding, eliminating the need for manual updates to the UI.
       Provides direct access to child nodes, making it easy to build and modify complex layouts programmatically.
+
+ # Q6 # 
+  2. yes, i can do it. There add all component one time
+  3. If a component exceeds the limits of the VBox, it may overlap with other interface components.
+     for manage this we can just upgrade the size of the component, use the setclip() methode or use scrollpane()
+
+ # Q7 #
+  1. they will be on each other
+  2. the “Password” label will be centered horizontally in its cell
+  3. the password field become more flexible, it adapte to the window
+
+
+   
 
 
 

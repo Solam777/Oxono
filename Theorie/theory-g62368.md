@@ -196,6 +196,21 @@ D'accord ! Voici la traduction en gardant la structure avec les hashtags :
   3. the password field become more flexible, it adapte to the window
 
 
+ # javafx-events #
+
+   1. when u click on insert button it'll add the texte in textearea and then in the console
+   2. it consume all charactere when u write
+
+                KeyEvent.KEY_TYPED,
+                e -> {
+                    String character = e.getCharacter();
+                    // Consomme l'événement si le caractère est une lettre (A-Z ou a-z)
+                    if (character.matches("[a-zA-Z]")) {
+                        e.consume();
+                    }
+                }); like this u can only write number
+
+
    
 
 

@@ -17,12 +17,18 @@ public class Drawing {
 
 
     public void add(Shape shape) {
-
         shapes.add(shape);
     }
 
+    public void add(int index, Shape shape){
+        if (index>=0 && index < shapes.size()){
+            shapes.add(index,shape);
+        }
+    }
 
-    protected boolean remove(Shape shape) {
+
+
+    public boolean remove(Shape shape) {
         return shapes.remove(shape);
     }
 
@@ -46,7 +52,7 @@ public class Drawing {
     }
 
 
-    protected Shape getShapeAt(int index) {
+    public Shape getShapeAt(int index) {
         if (index >= 0 && index < shapes.size()) {
             return shapes.get(index);
         }

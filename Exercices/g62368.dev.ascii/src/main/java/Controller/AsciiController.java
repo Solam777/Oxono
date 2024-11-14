@@ -1,5 +1,6 @@
 package Controller;
 import Model.AsciiPaint;
+import Model.Commandes.DeleteCommand;
 import Model.Point;
 import View.View;
 
@@ -19,11 +20,13 @@ public class AsciiController {
     public void start() {
         Scanner input = new Scanner(System.in);
         String choice;
-        System.out.println("Tapez 1 pour ajouter des formes ");
+        System.out.println("Tapez 1 pour ajouter des formes  ou modifie");
         System.out.println("Tapez 2 pour afficher votre forme ");
         System.out.println("Tapez 3 pour afficher votre liste de formes ");
         System.out.println("Tapez 4 pour bouger une forme ");
         System.out.println("Tapez 5 pour supprimer une forme ");
+        System.out.println("Tapez 'undo' pour annuler la dernière action ");
+        System.out.println("Tapez 'redo' pour rétablir la dernière action annulée ");
         System.out.println("Tapez -1 pour quitter");
 
         while (true) {
@@ -36,15 +39,23 @@ public class AsciiController {
                     String regexCercle = "^add\\s+circle\\s+(\\d+)\\s+(\\d+)\\s+(\\d+)\\s+(\\w)$";
                     String regexRectangle = "^add\\s+rectangle\\s+(\\d+)\\s+(\\d+)\\s+(\\d+)\\s+(\\d+)\\s+(\\w)$";
                     String regexCarre = "^add\\s+square\\s+(\\d+)\\s+(\\d+)\\s+(\\d+)\\s+(\\w)$";
+                    String undo = "^undo$";
+                    String redo = "^redo$";
+
 
                     Pattern patternCercle = Pattern.compile(regexCercle);
                     Pattern patternRectangle = Pattern.compile(regexRectangle);
                     Pattern patternCarre = Pattern.compile(regexCarre);
+                    Pattern patternundo = Pattern.compile(undo);
+                    Pattern patternredo = Pattern.compile(redo);
+
 
                     String forme;
                     System.out.println("Si c'est un cercle, il doit être écrit sous cette forme : add circle 5 3 1 c");
                     System.out.println("Si c'est un rectangle, il doit être écrit sous cette forme : add rectangle 10 10 5 20 r");
                     System.out.println("Si c'est un carré, il doit être écrit sous cette forme : add square 10 10 5 r");
+                    System.out.println("taper \"redo\" pour revenir ");
+                    System.out.println("taper \"undo\" pour retourner en arrierer  ");
 
                     while (true) {
                         forme = input.nextLine();
@@ -56,6 +67,8 @@ public class AsciiController {
                             System.out.println("Tapez 3 pour afficher votre liste de formes ");
                             System.out.println("Tapez 4 pour bouger une forme ");
                             System.out.println("Tapez 5 pour supprimer une forme ");
+                            System.out.println("Tapez undo pour annuler la derniere commande ");
+                            System.out.println("Tapez redo pour revenir ");
                             System.out.println("Tapez -1 pour quitter");
                             break;
                         }
@@ -63,6 +76,8 @@ public class AsciiController {
                         Matcher matcherCercle = patternCercle.matcher(forme);
                         Matcher matcherRectangle = patternRectangle.matcher(forme);
                         Matcher matcherCarre = patternCarre.matcher(forme);
+                        Matcher matcherundo = patternundo.matcher(forme);
+                        Matcher matcherredo = patternredo.matcher(forme);
 
                         if (matcherCercle.matches()) {
                             int x = Integer.parseInt(matcherCercle.group(1));
@@ -92,15 +107,25 @@ public class AsciiController {
                             tab.addSquare(upperLeftX, upperLeftY, side, color);
                             System.out.println("Carré ajouté : (" + upperLeftX + ", " + upperLeftY + "), côté: " + side + ", couleur: " + color);
 
-                        } else {
+
+
+                        } else if (matcherundo.matches()) {
+                            tab.undo();
+                            System.out.println("Dernière action annulée.");
+                        }
+                        else if (matcherredo.matches()){
+                            tab.redo();
+                        }
+                        else
+                        {
                             System.out.println("Commande invalide, réessayez.");
+                            System.out.println("Dernière action rétablie.");
                         }
                     }
                     break;
 
                 case "2":
                     System.out.println("Affichage de la forme...");
-                    // À préciser : si vous voulez afficher une seule forme, ajouter un choix pour sélectionner l'index
                     vue.display(tab);
                     break;
 
@@ -126,9 +151,19 @@ public class AsciiController {
                     tab.removeShape(pos);
                     break;
 
+                case "undo":
+                    tab.undo();
+                    System.out.println("Dernière action annulée.");
+                    break;
+
+                case "redo":
+                    tab.redo();
+                    System.out.println("Dernière action rétablie.");
+                    break;
+
                 case "-1":
                     System.out.println("Quitter...");
-                    input.close();  // Scanner fermé uniquement lors de la sortie
+                    input.close();
                     return;
 
                 default:

@@ -1,7 +1,9 @@
 package Model;
 
 public class ColoredShape implements Shape {
+
     char color;
+
 
     public ColoredShape(char color) {
         this.color = color;
@@ -24,5 +26,7 @@ public class ColoredShape implements Shape {
     public void setColor(char color) {
         this.color = color;
     }
+
+
 
 }

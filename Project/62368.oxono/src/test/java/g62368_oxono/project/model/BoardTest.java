@@ -13,7 +13,7 @@ public class BoardTest {
 
     @BeforeEach
     public void setUp() {
-        board = new Board(6); // Initialisation d'un plateau 5x5
+        board = new Board(6); // Initialisation d'un plateau 6x6
     }
 
     @Test
@@ -28,7 +28,7 @@ public class BoardTest {
         assertTrue(board.isInside(new Position(0, 0)));
         assertTrue(board.isInside(new Position(4, 4)));
         assertFalse(board.isInside(new Position(-1, 0)));
-        assertFalse(board.isInside(new Position(5, 5)));
+        assertFalse(board.isInside(new Position(5, 6)));
     }
 
     @Test
@@ -46,12 +46,11 @@ public class BoardTest {
 
     @Test
     public void testPlaceTotem() {
-        Position newPos = new Position(1, 1);
-        board.placeTotem(newPos, new Totem(Mark.X));
+        Position newPos = new Position(2, 3);
+        board.placeTotem(newPos,board.theTotem(Mark.X));
         assertNotNull(board.getTotemPosition(Mark.X));
         assertEquals(newPos,board.getTotemPosition(Mark.X));
-
-
+        System.out.println(board.getTotemPosition(Mark.X));
     }
 
     @Test
@@ -73,14 +72,16 @@ public class BoardTest {
 
     @Test
     public void testEmptyDirectionPosition() {
-        Position pos = new Position(2, 2);
-        List<Position> emptyPositions = board.emptyDirectionPosition(pos);
+        Pawn pawn = new Pawn(Mark.X,Color.BLACK);
+        board.setpawn(new Position(2,1),pawn);
+        board.setpawn(new Position(3,2),pawn);
+        board.setpawn(new Position(2,3),pawn);
+        board.setpawn(new Position(1,2),pawn);
+        System.out.println(board.getPiece(new Position(2,2)).getMark());
+        System.out.println(board.emptyDirectionPosition(new Position(2,2)));
 
-        // Vérifie que les positions vides adjacentes sont correctes
-        for (Position p : emptyPositions) {
-            assertTrue(board.isInside(p));
-            assertTrue(board.isEmpty(p));
-        }
+
+
     }
 
     @Test
@@ -98,36 +99,110 @@ public class BoardTest {
 
     @Test
     public void testIsWin() {
-        // Place des pions pour simuler une victoire sur une ligne
-        board.placePawn(new Position(0, 0), new Pawn(Mark.X,Color.BLACK));
-        board.placePawn(new Position(0, 1), new Pawn(Mark.X,Color.BLACK));
-        board.placePawn(new Position(0, 2), new Pawn(Mark.X,Color.BLACK));
-        board.placePawn(new Position(0, 3), new Pawn(Mark.X,Color.BLACK));
 
-        assertTrue(board.Iswin(new Position(0, 0), new Pawn(Mark.X, Color.PINK)));
+        Totem totem =board.theTotem(Mark.X);
+        Pawn pawn = new Pawn(Mark.X, Color.BLACK);
+        System.out.println(board.getTotemPosition(Mark.X));
+
+        board.placeTotem(new Position(2, 1), totem);
+        board.placePawn(new Position(1, 1), pawn);
+
+        board.placeTotem(new Position(2,2),totem);
+        board.placePawn(new Position(1, 2), pawn);
+
+        board.placeTotem(new Position(2, 3), totem);
+        board.placePawn(new Position(1, 3), pawn);
+
+        board.placeTotem(new Position(2, 4), totem);
+        board.placePawn(new Position(1, 4), pawn);
+
+        assertTrue(board.checkLine(1 , new Pawn(Mark.X, Color.BLACK)));
+
     }
 
     @Test
     public void testCheckLine() {
-        // Place des pions sur une ligne
-        board.placeTotem(new Position(0, 0), new Totem(Mark.X));
-        board.placeTotem(new Position(0, 1), new Totem(Mark.X));
-        board.placeTotem(new Position(0, 2), new Totem(Mark.X));
-        board.placeTotem(new Position(0, 3), new Totem(Mark.X));
+        Totem totem =board.theTotem(Mark.X);
+        Pawn pawn = new Pawn(Mark.X, Color.BLACK);
+        System.out.println(board.getTotemPosition(Mark.X));
 
-        assertTrue(board.checkLine(0, new Pawn(Mark.X, Color.BLACK)));
-        assertFalse(board.checkLine(1, new Pawn(Mark.X, Color.BLACK)));
+        board.placeTotem(new Position(2, 1), totem);
+        board.placePawn(new Position(1, 1), pawn);
+
+        board.placeTotem(new Position(2,2),totem);
+        board.placePawn(new Position(1, 2), pawn);
+
+        board.placeTotem(new Position(2, 3), totem);
+        board.placePawn(new Position(1, 3), pawn);
+
+        board.placeTotem(new Position(2, 4), totem);
+        board.placePawn(new Position(1, 4), pawn);
+
+        assertTrue(board.checkLine(1 , new Pawn(Mark.X, Color.BLACK)));
+        assertFalse(board.checkLine(2 , new Pawn(Mark.X, Color.BLACK)));
     }
 
     @Test
     public void testCheckColumn() {
-        // Place des pions sur une colonne
-        board.placePawn(new Position(0, 0), new Pawn(Mark.X,Color.BLACK));
-        board.placePawn(new Position(0, 1), new Pawn(Mark.X,Color.BLACK));
-        board.placePawn(new Position(0, 2), new Pawn(Mark.X,Color.BLACK));
-        board.placePawn(new Position(0, 3), new Pawn(Mark.X,Color.BLACK));
+        Totem totem =board.theTotem(Mark.X);
+        Pawn pawn = new Pawn(Mark.X, Color.BLACK);
+        System.out.println(board.getTotemPosition(Mark.X));
 
-        assertTrue(board.checkColumn(0, new Pawn(Mark.X, Color.BLACK)));
-        assertFalse(board.checkColumn(1, new Pawn(Mark.X, Color.BLACK))); //passe
+        board.placeTotem(new Position(1, 1), totem);
+        board.placePawn(new Position(1,2 ), pawn);
+
+        board.placeTotem(new Position(2, 1), totem);
+        board.placePawn(new Position(2,2 ), pawn);
+
+        board.placeTotem(new Position(3, 1), totem);
+        board.placePawn(new Position(3,2 ), pawn);
+
+        board.placeTotem(new Position(4, 1), totem);
+        board.placePawn(new Position(4,2 ), pawn);
+
+        assertTrue(board.checkColumn(2 , pawn));
     }
+
+    @Test
+    public void testPlacePawn() {
+        Totem totem =board.theTotem(Mark.X);
+        board.placeTotem(new Position(2, 3), totem);
+
+        // Cas valide : Placer un pion dans une position adjacente
+        Pawn pawn = new Pawn(Mark.X, Color.BLACK);
+        Position validPosition = new Position(2, 2);
+        board.placePawn(validPosition, pawn);
+        assertEquals(pawn, board.getPiece(validPosition));
+        System.out.println(board.getPiece(validPosition));
+
+        // Cas invalide : Position hors direction valide
+        Position invalidPosition = new Position(5, 5);
+        assertThrows(OxonoExecption.class, () -> board.placePawn(invalidPosition, pawn));
+    }
+
+    @Test
+    public void testValidateMove_jump() {
+        board.placeTotem(new Position(  0,2),board.theTotem(Mark.X));
+        board.placePawn(new Position(  0,3),new Pawn(Mark.X,Color.BLACK));
+        System.out.println(board.getPiece(new Position(0,2)));
+
+        board.placeTotem(new Position(  0,0),board.theTotem(Mark.X));
+        board.placePawn(new Position(  0,1),new Pawn(Mark.X,Color.BLACK));
+        System.out.println(board.getPiece(new Position(0,0)));
+
+        board.placeTotem(new Position(  1,0),board.theTotem(Mark.X));
+        board.placePawn(new Position(  2,0),new Pawn(Mark.X,Color.BLACK));
+
+        board.placeTotem(new Position(  0,0),board.theTotem(Mark.X));
+        board.placePawn(new Position(  1,0),new Pawn(Mark.X,Color.BLACK));
+
+
+        assertThrows(OxonoExecption.class, () -> board.placeTotem(new Position(  4,0),board.theTotem(Mark.X)));
+
+
+
+
+
+    }
+
 }

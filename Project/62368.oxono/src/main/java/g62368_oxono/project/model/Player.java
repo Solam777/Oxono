@@ -43,12 +43,23 @@ public class Player {
     }
 
 
+    public void setdraw(){
+        pawnsX.clear();
+        pawnsO.clear();
+    }
 
     public Color getColor() {
         return color;
     }
 
-//    public Stack<Pawn> getPion_X_du_joueur() {
+    public Stack<Pawn> getPawnsX() {
+        return pawnsX;
+    }
+
+    public Stack<Pawn> getPawnsO() {
+        return pawnsO;
+    }
+    //    public Stack<Pawn> getPion_X_du_joueur() {
 //        return pion_X_du_joueur;
 //    }
 //

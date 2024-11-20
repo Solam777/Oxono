@@ -78,7 +78,7 @@ public class BoardTest {
         board.setpawn(new Position(2,3),pawn);
         board.setpawn(new Position(1,2),pawn);
         System.out.println(board.getPiece(new Position(2,2)).getMark());
-        System.out.println(board.emptyDirectionPosition(new Position(2,2)));
+        System.out.println(board.movesIfTotemSurrounded(new Position(2,2)));
 
 
 

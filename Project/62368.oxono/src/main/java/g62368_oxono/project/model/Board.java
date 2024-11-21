@@ -33,20 +33,15 @@ public class Board {
     public Totem getLastMoveTotem() {
         return lastMoveTotem;
     }
-
-
-
     /*
-    verifie si on peut placer le totem si oui il le place
-    * */
+   place le totem sur le bord si toutes les conditions y sont*/
     public void placeTotem(Position position, Totem totem) {
         Position oldPosition = getTotemPosition(totem.getMark());
-        validateMove(oldPosition, totem);
+        validateMove(position, totem);
         updateTotem(position,totem,oldPosition);
-
-
     }
 
+    /*mets a jour le bord en y placent le totem */
     private void updateTotem(Position position, Totem totem, Position oldPosition) {
         board[oldPosition.x()][oldPosition.y()] = null;
         board[position.x()][position.y()] = totem;
@@ -59,20 +54,20 @@ public class Board {
     }
 
     /*
-     * prend la postion du totem
+     * renvoie la position du totem
      * */
     public Position getTotemPosition(Mark mark) {
         return Mark.O == mark ? posTotemO : posTotemX;
     }
 
     /*
-     * verifie si ou l'on veut placer son toteme est bien dans le board
+     * verifie si où l'on veut placer son toteme est bien dans le board
      * */
     public boolean isInside(Position position) {
         return position.y() >= 0 && position.x() >= 0 && position.y() < size && position.x() < size;
     }
 
-    /*verifie si la postion est valid et ou on veut placer notre */
+    /*verifie si la postion est valid ou l'on veut placer notre totem ou sil est entrourre ou pas */
     public void validateMove( Position newPosition,Totem totem) {
         if (!isInside(newPosition) || (!isEmpty(newPosition))) {
             throw new OxonoExecption("La position est en dehors des limites ou deja occupe");
@@ -83,7 +78,13 @@ public class Board {
                 throw new OxonoExecption("position is bound");
             }
         }
-        if ( newPosition.x() == oldPosition || )
+        if ( newPosition.x() == oldPosition.x() || newPosition.y() == oldPosition.y()){
+           return;
+        }
+        else {
+            throw new OxonoExecption("La position est incorrecte");
+        }
+
     }
 
     /*
@@ -94,20 +95,7 @@ public class Board {
     }
 
     /*
-     * nous donnes une liste de postion valide ou lon peut placer une piece
-     * */
-//    public List<Position> validPositions(Position position) {
-//        if (isSurrounded(position)) {
-//            if (movesIfTotemSurrounded(position).isEmpty()) { // si la liste de positon est vide en fonction de sa direction on retourne toutes les potions vides
-//                return allEmptyPositions();
-//            }
-//            return movesIfTotemSurrounded(position);
-//        }
-//        return allEmptyPositions();
-//    }
-
-    /*
-     * verifie si la postion ou on va placer le pions sera encercle
+     * verifie si la postion ou on va placer le pion sera encercle
      * */
     public boolean isSurrounded(Position position) {
         for (Direction dir : Direction.values()) {
@@ -289,6 +277,9 @@ public class Board {
                 throw new OxonoExecption("La position choisie n'est pas vide ou pas adjacente au totem");
             }
         }
+        if (totem.getMark() != pawn.getMark()) {
+            throw new OxonoExecption("Le pion ne peut pas être placé si la mark du totem est diff.");
+        }
         board[position.x()][position.y()] = pawn;
         recentPawnPlace = pawn;
     }
@@ -312,6 +303,11 @@ public class Board {
     // peut bouger le totem au premiere endroit dans toute les positions s'il est encercle
     public void fisrtPositinDirection(Position position) {
 
+    }
+    public void removePawn(Position pawnPosition) {
+        if (!isEmpty(pawnPosition)) {
+            board[pawnPosition.x()][pawnPosition.y()] = null;
+        }
     }
 
 }

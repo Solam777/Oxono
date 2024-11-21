@@ -55,13 +55,7 @@ public class BoardTest {
 
     @Test
     public void testValidPositions() {
-        Position pos = new Position(2, 2);
-        List<Position> validPositions = board.validPositions(pos);
 
-        for (Position p : validPositions) {
-            assertTrue(board.isInside(p));
-            assertTrue(board.isEmpty(p));
-        }
     }
 
     @Test
@@ -196,12 +190,7 @@ public class BoardTest {
         board.placeTotem(new Position(  0,0),board.theTotem(Mark.X));
         board.placePawn(new Position(  1,0),new Pawn(Mark.X,Color.BLACK));
 
-
         assertThrows(OxonoExecption.class, () -> board.placeTotem(new Position(  4,0),board.theTotem(Mark.X)));
-
-
-
-
 
     }
 

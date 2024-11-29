@@ -22,7 +22,6 @@ public class MoveTotem implements Command {
     @Override
     public void execute() {
         board.placeTotem(to, totem);
-
     }
 
     /*

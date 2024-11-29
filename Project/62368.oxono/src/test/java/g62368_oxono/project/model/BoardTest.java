@@ -47,7 +47,7 @@ public class BoardTest {
     @Test
     public void testPlaceTotem() {
         Position newPos = new Position(2, 3);
-        board.placeTotem(newPos,board.theTotem(Mark.X));
+        board.placeTotem(newPos,board.findTheTotem(Mark.X));
         assertNotNull(board.getTotemPosition(Mark.X));
         assertEquals(newPos,board.getTotemPosition(Mark.X));
         System.out.println(board.getTotemPosition(Mark.X));
@@ -94,7 +94,7 @@ public class BoardTest {
     @Test
     public void testIsWin() {
 
-        Totem totem =board.theTotem(Mark.X);
+        Totem totem =board.findTheTotem(Mark.X);
         Pawn pawn = new Pawn(Mark.X, Color.BLACK);
         System.out.println(board.getTotemPosition(Mark.X));
 
@@ -116,7 +116,7 @@ public class BoardTest {
 
     @Test
     public void testCheckLine() {
-        Totem totem =board.theTotem(Mark.X);
+        Totem totem =board.findTheTotem(Mark.X);
         Pawn pawn = new Pawn(Mark.X, Color.BLACK);
         System.out.println(board.getTotemPosition(Mark.X));
 
@@ -138,7 +138,7 @@ public class BoardTest {
 
     @Test
     public void testCheckColumn() {
-        Totem totem =board.theTotem(Mark.X);
+        Totem totem =board.findTheTotem(Mark.X);
         Pawn pawn = new Pawn(Mark.X, Color.BLACK);
         System.out.println(board.getTotemPosition(Mark.X));
 
@@ -159,7 +159,7 @@ public class BoardTest {
 
     @Test
     public void testPlacePawn() {
-        Totem totem =board.theTotem(Mark.X);
+        Totem totem =board.findTheTotem(Mark.X);
         board.placeTotem(new Position(2, 3), totem);
 
         // Cas valide : Placer un pion dans une position adjacente
@@ -176,22 +176,29 @@ public class BoardTest {
 
     @Test
     public void testValidateMove_jump() {
-        board.placeTotem(new Position(  0,2),board.theTotem(Mark.X));
+        board.placeTotem(new Position(  0,2),board.findTheTotem(Mark.X));
         board.placePawn(new Position(  0,3),new Pawn(Mark.X,Color.BLACK));
         System.out.println(board.getPiece(new Position(0,2)));
 
-        board.placeTotem(new Position(  0,0),board.theTotem(Mark.X));
+        board.placeTotem(new Position(  0,0),board.findTheTotem(Mark.X));
         board.placePawn(new Position(  0,1),new Pawn(Mark.X,Color.BLACK));
         System.out.println(board.getPiece(new Position(0,0)));
 
-        board.placeTotem(new Position(  1,0),board.theTotem(Mark.X));
+        board.placeTotem(new Position(  1,0),board.findTheTotem(Mark.X));
         board.placePawn(new Position(  2,0),new Pawn(Mark.X,Color.BLACK));
 
-        board.placeTotem(new Position(  0,0),board.theTotem(Mark.X));
+        board.placeTotem(new Position(  0,0),board.findTheTotem(Mark.X));
         board.placePawn(new Position(  1,0),new Pawn(Mark.X,Color.BLACK));
 
-        assertThrows(OxonoExecption.class, () -> board.placeTotem(new Position(  4,0),board.theTotem(Mark.X)));
+        assertThrows(OxonoExecption.class, () -> board.placeTotem(new Position(  4,0),board.findTheTotem(Mark.X)));
 
+    }
+
+    @Test
+
+    public void lastTotem() {
+        board.placeTotem(new Position(  0,3),board.findTheTotem(Mark.O));
+        System.out.println(board.getLastMoveTotem(new Totem(Mark.O)));
     }
 
 }

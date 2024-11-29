@@ -59,6 +59,15 @@ public class Player {
     public Stack<Pawn> getPawnsO() {
         return pawnsO;
     }
+     public void reset() {
+        pawnsX.clear();
+        pawnsO.clear();
+        for (int i = 0; i < 8; i++) {
+            pawnsO.add(new Pawn(Mark.O, color));
+            pawnsX.add(new Pawn(Mark.X, color));
+        }
+     }
+
     //    public Stack<Pawn> getPion_X_du_joueur() {
 //        return pion_X_du_joueur;
 //    }

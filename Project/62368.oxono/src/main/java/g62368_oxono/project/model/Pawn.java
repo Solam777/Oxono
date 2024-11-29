@@ -14,9 +14,8 @@ public class Pawn extends Piece{
 
     @Override
     public String toString() {
-        return "Pawn{" +
+        return
                 "color=" + color +
-                ", mark=" + getMark() +
-                '}';
+                ", mark=" + getMark();
     }
 }

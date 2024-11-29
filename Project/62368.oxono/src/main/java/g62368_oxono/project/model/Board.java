@@ -1,7 +1,5 @@
 package g62368_oxono.project.model;
 
-import javafx.geometry.Pos;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,7 +17,7 @@ public class Board {
         initialize();
     }
 
-    private void initialize() {
+    public void initialize() {
         posTotemX = new Position(2, 2);
         posTotemO = new Position(3, 3);
         board[posTotemO.x()][posTotemO.y()] = new Totem(Mark.O);
@@ -30,9 +28,22 @@ public class Board {
         return size;
     }
 
-    public Totem getLastMoveTotem() {
-        return lastMoveTotem;
+    public Position getLastMoveTotem(Totem totem) {
+        if (totem.getMark() == Mark.X) {
+            return posTotemX =  getTotemPosition(Mark.X);
+        }else {
+            return posTotemO = getTotemPosition(Mark.O);
+        }
+
     }
+
+    /*
+     * renvoie la position du totem
+     * */
+    public Position getTotemPosition(Mark mark) {
+        return Mark.O == mark ? posTotemO : posTotemX;
+    }
+
     /*
    place le totem sur le bord si toutes les conditions y sont*/
     public void placeTotem(Position position, Totem totem) {
@@ -53,12 +64,7 @@ public class Board {
         lastMoveTotem = totem;
     }
 
-    /*
-     * renvoie la position du totem
-     * */
-    public Position getTotemPosition(Mark mark) {
-        return Mark.O == mark ? posTotemO : posTotemX;
-    }
+
 
     /*
      * verifie si où l'on veut placer son toteme est bien dans le board
@@ -260,7 +266,8 @@ public class Board {
     }
 
     public void placePawn(Position position, Pawn pawn) {
-        Totem totem = getLastMoveTotem();
+
+        Totem totem = findTheTotem(pawn.getMark());
         if (totem == null) {
             throw new OxonoExecption("Aucun totem n'a été déplacé ou initialisé.");
         }
@@ -273,7 +280,6 @@ public class Board {
             }
         } else {
             if (!movesIfTotemSurrounded(totemPosition).contains(position)) {
-
                 throw new OxonoExecption("La position choisie n'est pas vide ou pas adjacente au totem");
             }
         }
@@ -287,14 +293,16 @@ public class Board {
     public Pawn getRecentPawnPlace() {
         return recentPawnPlace;
     }
-    public Totem theTotem(Mark mark) {
+
+
+    // trouve le totem avec la mark souhaite
+    public Totem findTheTotem(Mark mark) {
        if (mark == Mark.O){
          return  (Totem) getPiece(posTotemO);
        }
        else {
            return (Totem) getPiece(posTotemX);
        }
-
     }
 
     public void setpawn(Position position, Pawn pawn) {
@@ -302,12 +310,15 @@ public class Board {
     }
     // peut bouger le totem au premiere endroit dans toute les positions s'il est encercle
     public void fisrtPositinDirection(Position position) {
-
     }
+
     public void removePawn(Position pawnPosition) {
         if (!isEmpty(pawnPosition)) {
             board[pawnPosition.x()][pawnPosition.y()] = null;
         }
+    }
+    public boolean isTotem(Piece piece) {
+        return piece instanceof Totem;
     }
 
 }

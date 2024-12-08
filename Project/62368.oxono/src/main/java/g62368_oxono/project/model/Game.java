@@ -5,8 +5,8 @@ import g62368_oxono.project.model.Commande.Command;
 import g62368_oxono.project.model.Commande.CommandManager;
 import g62368_oxono.project.model.Commande.InsertPawn;
 import g62368_oxono.project.model.Commande.MoveTotem;
-import g62368_oxono.project.model.Observer.Event;
 import g62368_oxono.project.model.Observer.Observable;
+import g62368_oxono.project.model.Observer.ObservableEvent;
 import g62368_oxono.project.model.Observer.Observer;
 
 import java.util.ArrayList;
@@ -17,15 +17,16 @@ public class Game implements Observable {
     private Player player1;
     private Player player2;
     private Player currentPlayer;
-    private Totem lastMoveTotem;
     private int size;
     private Position totemXPosition;
     private Position totemoPosition;
     private CommandManager commandManager;
     private List<Observer> observers;
     private Position lastMovePawn;
-    private boolean draw;
-    private boolean gameOver;
+    public Totem lastMoveTotem;
+
+    private boolean canPlacePawn = false;
+
 
     public Game() {
         this.player1 = new Player(Color.BLACK);
@@ -41,7 +42,7 @@ public class Game implements Observable {
         this.size = size;
         totemXPosition = board.getTotemPosition(Mark.X);
         totemoPosition = board.getTotemPosition(Mark.O);
-       lastMoveTotem = null;
+        notifyObservers(ObservableEvent.GAME_START);
     }
 
     public Player getCurrentPlayer(){
@@ -49,31 +50,40 @@ public class Game implements Observable {
     }
 
     public void playPawn(Position position, Pawn pawn){
-        board.placePawn(position, pawn);
-        Totem lastMoveTotem = board.findTheTotem( pawn.getMark());
-        Position totemPosition = board.getTotemPosition(lastMoveTotem.getMark());
-        lastMovePawn = position;
-        Command command = new InsertPawn(position, board, totemPosition , getCurrentPlayer() ,pawn);
-        commandManager.executeCommand(command);
-    }
-
-
-    public Board getBoard() {
-        return board;
+        if(canPlacePawn){
+            if (lastMoveTotem == null) {
+                System.out.println("No Totem has been moved yet.");
+                return;
+            }
+            Position totemPosition = board.getTotemPosition(lastMoveTotem.getMark());
+            Command command = new InsertPawn(position, board, totemPosition , getCurrentPlayer() ,pawn);
+            commandManager.executeCommand(command);
+            notifyObservers(ObservableEvent.PLACE_PAWN);
+        }
+        else {
+            System.out.println("Impossible jouer un pawn");
+        }
+        canPlacePawn = false;
     }
 
     public void playTotem(Position position, Totem totem){
-        Position lastPosTotem = getTotemPositionForMove(totem.getMark());
-            board.placeTotem(position, totem);
+        if(!canPlacePawn){
+            Position lastPosTotem = getTotemPositionForMove(totem.getMark());
             updateTotemPosition(totem,position);
-            lastMoveTotem = totem;
             Command command = new MoveTotem(lastPosTotem, position, totem, board);
             commandManager.executeCommand(command);
+            notifyObservers(ObservableEvent.MOVE_TOTEM);
+
+        }
+        canPlacePawn = true;
+        lastMoveTotem = totem;
     }
+
 
     private Position getTotemPositionForMove(Mark mark) {
         return mark == Mark.X ? totemXPosition : totemoPosition;
     }
+
     private void updateTotemPosition(Totem totem, Position newPos) {
         if (totem.getMark() == Mark.X) {
             totemXPosition = newPos;
@@ -89,14 +99,11 @@ public class Game implements Observable {
             return board.Iswin(lastMovePawn, (Pawn) token);
         }
         return false;
+
     }
 
-    public boolean isDraw() {
-        if (!checkWin()) {
-            return (player1.hasPawn(Mark.X) && player1.hasPawn(Mark.O)) ||
-                    player2.hasPawn(Mark.X) && player2.hasPawn(Mark.O);
-        }
-        return false;
+    public boolean  isDraw() {
+       return (getCurrentPlayer().getPawnsO().isEmpty() && getCurrentPlayer().getPawnsX().isEmpty());
     }
 
     public int[] getRemainingPawns(){
@@ -115,70 +122,65 @@ public class Game implements Observable {
 
     public void undo(){
         commandManager.undo();
+        canPlacePawn = !canPlacePawn;
+        notifyObservers(ObservableEvent.UNDO);
     }
     public boolean canUndo(){
         return!commandManager.getUndoStack().isEmpty();
     }
 
     public void redo(){
-        commandManager.redo();
+      commandManager.redo();
+        canPlacePawn =!canPlacePawn;
+        notifyObservers(ObservableEvent.REDO);
     }
     public boolean canRedo(){
         return!commandManager.getRedoStack().isEmpty();
     }
     @Override
     public void addObserver(Observer observer) {
+        observers.add(observer);
     }
 
     @Override
     public void removeObserver(Observer observer) {
+        observers.remove(observer);
     }
 
     @Override
-    public void notifyObservers(Event event) {
+    public void notifyObservers(ObservableEvent event) {
         for (Observer observer : observers) {
-            observer.update(this, event);
+            observer.update(event);
         }
     }
 
-    public Player getPlayer(Mark mark) {
-        if (mark == Mark.X) {
-            return player1;
-        } else if (mark == Mark.O) {
-            return player2;
-        } else {
-            throw new IllegalArgumentException("Invalid mark: " + mark);
-        }
-    }
-    public void restart() {
-        // Reset the board
-        board = new Board(size);
-
-        // Reset the players' pawns and racks
-        player1.reset();
-        player2.reset();
-
-        // Reset the current player
-        currentPlayer = player1;
-
-        // Reset the game state
-        gameOver = false;
-        draw = false;
-
-        // Clear the command history
-        commandManager.clearHistory();
-    }
 
     public int getSize() {
         return size;
     }
 
     public Piece getPiece(Position position) {
-      return getBoard().getPiece(position);
+      return board.getPiece(position);
     }
+
     public boolean isTotem(Piece piece) {
         return piece instanceof Totem;
     }
 
+    public boolean isValidMove(Position clickTotemPos, Totem totem) {
+        try {
+            // Tente de valider le mouvement
+            board.validateMove(clickTotemPos, totem);
+            return true; // Si aucune exception n'est levée, le mouvement est valide
+        } catch (OxonoExecption e) {
+            // Capture et gère l'erreur, retourne false si le mouvement est invalide
+            System.out.println("Mouvement invalide : " + e.getMessage());
+            return false;
+        }
+    }
 
+    public boolean canPlacePawn(Position position,Totem totem) {
+
+        return true;
+    }
 }

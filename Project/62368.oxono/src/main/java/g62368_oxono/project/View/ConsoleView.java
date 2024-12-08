@@ -1,13 +1,13 @@
 package g62368_oxono.project.View;
 
 import g62368_oxono.project.model.*;
-import g62368_oxono.project.model.Observer.Event;
+import g62368_oxono.project.model.Observer.ObservableEvent;
 import g62368_oxono.project.model.Observer.Observer;
 
 import java.util.Scanner;
 
 
-public class ConsoleView implements Observer {
+public class ConsoleView {
 
     public Scanner scanner = new Scanner(System.in);
 
@@ -70,7 +70,7 @@ public class ConsoleView implements Observer {
 
 
     public String getCommandInput() {
-        System.out.println("Entrez une commande (restart, quit, undo, redo) ou appuyez sur Entree pour continuer : ");
+        System.out.println("Entrez une commande" );
         return scanner.nextLine();
     }
     public String startInput() {
@@ -92,7 +92,7 @@ public class ConsoleView implements Observer {
         System.out.println(". Placez vos totems (X ou O) sur le plateau en entrant la commande : 2 3 X");
         System.out.println("   - 2 3 X: place le totem a la position x: 2 y: 3");
         System.out.println("   - undo : Annule le dernier coup");
-        System.out.println("   - redo : Répète le dernier coup annulé");
+
         return scanner.nextLine();
     }
 
@@ -104,9 +104,7 @@ public class ConsoleView implements Observer {
         System.out.println("======================================================================");
         System.out.println();
     }
-    public void displayStart(){
-        System.out.println("   - start : Commence une nouvelle partie");
-    }
+
     public void displayRack(int[] pawnsRemaining) {
         System.out.println("Player Pink ============================Player Black :");
         System.out.println();
@@ -130,10 +128,13 @@ public class ConsoleView implements Observer {
             }
         }
     }
-
-
-    @Override
-    public void update(Game game, Event event) {
-
+    public void help() {
+        System.out.println(" - giveup : quitter la partie " );
+        System.out.println(" - undo : retourner en arriere " );
+        System.out.println(" - redo : revenir en avant " );
+        System.out.println(" - Placez vos pions : pawn X/O b/p 3 5");
+        System.out.println(" - Placez vos totems : 2 3 X/O");
     }
+
+
 }

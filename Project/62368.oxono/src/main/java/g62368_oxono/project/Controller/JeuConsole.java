@@ -2,192 +2,82 @@ package g62368_oxono.project.Controller;
 
 import g62368_oxono.project.View.ConsoleView;
 import g62368_oxono.project.model.*;
+import g62368_oxono.project.model.Observer.ObservableEvent;
+import g62368_oxono.project.model.Observer.Observer;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class JeuConsole {
+public class JeuConsole implements Observer {
     private Game game;
     private ConsoleView view;
     public JeuConsole(Game game, ConsoleView view) {
         this.game = new Game();
         this.view = view;
+        game.addObserver(this);
     }
 
 
     public void start() {
-        view.displayStart();
-        int boardsize = view.getBoardSize();
-        boolean quit = false;
-        boolean started = false;
-        while (!quit) {
-            String input = view.startInput();
-            if (input.equals("start")) {
-                started = true;
-                game.initializeGame(boardsize);
-                play();
-            }
+    int boardsize = view.getBoardSize();
+    boolean quit = false;
+
+    game.initializeGame(boardsize);
+    while (!quit) {
+        String input = view.getCommandInput();
+
+            play();
+        if (input.equalsIgnoreCase("quit")) {
+            quit = true;
         }
     }
+}
+
+
 
     private void play() {
         boolean victory = false;
         do {
-            view.displayMenu();
-            view.displayBoard(game);
-            view.displayRack(game.getRemainingPawns());
+            try {
+                view.displayMenu();
+                view.displayRack(game.getRemainingPawns());
+                view.displayBoard(game);
+                whatdo();
 
-            placeTotem();
-            view.displayBoard(game);
-            view.getCommandInput();
-            playPawn();
-
-            victory = game.checkWin();
-            if (!victory) {
-                if (game.isDraw()) {
-                    // Égalité détectée
+                victory = game.checkWin();
+                if (victory) {
+                    view.showWinMessage(game.getCurrentPlayer());
+                } else if (game.isDraw()) {
                     view.showDrawMessage();
                     break;
+                } else {
+                    game.switchPlayer();
                 }
-                game.switchPlayer();
-            } else {
-
-                view.showWinMessage(game.getCurrentPlayer());
+            } catch (OxonoExecption e) {
+                view.showErrorMessage("Erreur : " + e.getMessage());
             }
         } while (!victory && !game.isDraw());
     }
 
 
-    private void playPawn() {
-        // Définitions des regex pour les différentes commandes
-        String regexPawn = "^pawn\\s([XO])\\s([bBpP])\\s(\\d+)\\s(\\d+)$";
-        String regexUndo = "^undo$";
-        String regexRedo = "^redo$";
-        String regexGiveup = "^giveup$";
-
-        // Compilation des patterns
-        Pattern patternPawn = Pattern.compile(regexPawn);
-        Pattern patternUndo = Pattern.compile(regexUndo);
-        Pattern patternRedo = Pattern.compile(regexRedo);
-        Pattern patternGiveup = Pattern.compile(regexGiveup);
-
-        while (true) {
-            // Lecture de l'entrée utilisateur
-            String input = view.getPawnInput();
-
-            // Création des matchers pour chaque commande
-            Matcher matcherPawn = patternPawn.matcher(input);
-            Matcher matcherUndo = patternUndo.matcher(input);
-            Matcher matcherRedo = patternRedo.matcher(input);
-            Matcher matcherGiveup = patternGiveup.matcher(input);
-
-            try {
-                // Commande "pawn"
-                if (matcherPawn.matches()) {
-                    String mark = matcherPawn.group(1); // X ou O
-                    String color = matcherPawn.group(2); // b ou p
-                    int x = Integer.parseInt(matcherPawn.group(3)); // Coordonnée x
-                    int y = Integer.parseInt(matcherPawn.group(4)); // Coordonnée y
-
-                    // Placement du pion
-                    placePawnOX(mark, color, x, y);
-                    break; // Sortie de la boucle après un placement valide
-
-                    // Commande "undo"
-                } else if (matcherUndo.matches()) {
-                    game.undo();
-                    view.showUndoMessage();
-                    view.displayBoard(game);
-
-                    // Commande "redo"
-                } else if (matcherRedo.matches()) {
-                    game.redo();
-                    view.showRedoMessage();
-                    view.displayBoard(game);
-
-                    // Commande "giveup"
-                } else if (matcherGiveup.matches()) {
-                    view.showQuitMessage();
-                    System.exit(0); // Quitte proprement le programme
-
-                    // Entrée invalide
-                } else {
-                    view.showErrorMessage("Commande invalide. Veuillez réessayer.");
-                }
-            } catch (OxonoExecption e) {
-                // Gestion des erreurs spécifiques au jeu
-                view.showErrorMessage("Erreur : " + e.getMessage());
-            }
-        }
-    }
-
-
-
-    private void placeTotem(){
-        String regexTotem = "^(\\d+)\\s(\\d+)\\s([XO])$";
-        String regexundo = "^undo$";
-        String regexredo = "^redo$";
-        String regexgiveup = "^giveup$";
-
-        Pattern patternUndo = Pattern.compile(regexundo);
-        Pattern patternRedo = Pattern.compile(regexredo);
-        Pattern patternGiveup = Pattern.compile(regexgiveup);
-
-        Pattern patternTotem = Pattern.compile(regexTotem);
-        while (true) {
-            String input = view.getTotemInput();
-            Matcher matcherTotem = patternTotem.matcher(input);
-            Matcher matcherUndo = patternUndo.matcher(input);
-            Matcher matcherRedo = patternRedo.matcher(input);
-            Matcher matcherGiveup = patternGiveup.matcher(input);
-            if (matcherTotem.matches()) {
-                int x = Integer.parseInt(matcherTotem.group(1)); // Coordonnée x
-                int y = Integer.parseInt(matcherTotem.group(2)); // Coordonnée y
-                String mark = matcherTotem.group(3); // X ou O
-
-                placeTotem(mark,x,y);
-                break;
-            }
-            else if (matcherUndo.matches()) {
-
-                game.undo();
-                view.showUndoMessage();
-                view.displayBoard(game);
-
-            } else if (matcherGiveup.matches()) {
-                System.exit(0);
-                view.showQuitMessage();
-
-            } else if (matcherRedo.matches()) {
-                game.redo();
-                view.showRedoMessage();
-                view.displayBoard(game);
-            }
-
-            else {
-                System.out.println("commande not valid");
-            }
-        }
-    }
-    private void playUndoOrRedoOrQuit() {
-
-
-    }
-
     private void placePawnOX(String mark, String color, int x, int y) {
         if (mark.equalsIgnoreCase("x")) {
             if (color.equalsIgnoreCase("b")) {
                 game.playPawn(new Position(x, y), new Pawn(Mark.X, Color.BLACK));
+                System.out.println("placement du pion X en (" + x + "," + y + ")");
             } else if (color.equalsIgnoreCase("p")) {
                 game.playPawn(new Position(x, y), new Pawn(Mark.X, Color.PINK));
+                System.out.println("Placement du pion X en (" + x + "," + y + ")");
             } else {
                 System.out.println("Couleur invalide.");
             }
         } else if (mark.equalsIgnoreCase("o")) {
             if (color.equalsIgnoreCase("b")) {
                 game.playPawn(new Position(x, y), new Pawn(Mark.O, Color.BLACK));
+                System.out.println("Placement du pion O en (" + x + "," + y + ")");
             } else if (color.equalsIgnoreCase("p")) {
                 game.playPawn(new Position(x, y), new Pawn(Mark.O, Color.PINK));
+                System.out.println("Placement du pion O en (" + x + "," + y + ")");
             } else {
                 System.out.println("Couleur invalide.");
             }
@@ -196,28 +86,152 @@ public class JeuConsole {
         }
     }
 
+
     private void placeTotem(String mark, int x, int y) {
         if (mark.equalsIgnoreCase("x")) {
             game.playTotem(new Position(x, y), new Totem(Mark.X));
+            System.out.println("Placement du totem X en (" + x + "," + y + ")");
         } else if (mark.equalsIgnoreCase("o")) {
             game.playTotem(new Position(x, y), new Totem(Mark.O));
+            System.out.println("Placement du totem X en (" + x + "," + y + ")");
         } else {
             System.out.println("Marque invalide.");
         }
     }
 
-    public static void main(String[] args) {
-        Game game = new Game();
-        game.initializeGame(6);
-        ConsoleView consoleView = new ConsoleView();
-        game.playPawn(new Position(2,3),new Pawn(Mark.X,Color.BLACK));
-        consoleView.displayBoard(game);
-        game.playTotem(new Position(3,4),new Totem(Mark.O));
-        game.playPawn(new Position(4,4),new Pawn(Mark.O,Color.BLACK));
 
-        consoleView.displayBoard(game);
+    /*input qui demande quoi faire a lutilsateur et l'execute si cest correct */
+    private void whatdo() {
+        String regexTotem = "^(\\d+)\\s(\\d+)\\s([XO])$";
+        Pattern patternTotem = Pattern.compile(regexTotem);
+
+        String regexPawn = "^pawn\\s([XO])\\s([bBpP])\\s(\\d+)\\s(\\d+)$";
+        Pattern patternPawn = Pattern.compile(regexPawn);
+
+        boolean isRunning = true;
+
+        while (isRunning) {
+            String input = view.getCommandInput();
+
+            if (input.equalsIgnoreCase("undo")) {
+                handleUndo();
+            } else if (input.equalsIgnoreCase("redo")) {
+                handleRedo();
+            } else if (input.equalsIgnoreCase("giveup")) {
+                    handleGiveUp();
+            } else if (input.equalsIgnoreCase("help")) {
+                view.help();
+            } else {
+
+                Matcher matcherTotem = patternTotem.matcher(input);
+                Matcher matcherPawn = patternPawn.matcher(input);
+
+                if (matcherTotem.matches()) {
+                    handleTotemCommand(matcherTotem);
+                } else if (matcherPawn.matches()) {
+                    handlePawnCommand(matcherPawn);
+                } else {
+                    view.showErrorMessage("Commande invalide. Veuillez réessayer.");
+                }
+            }
+        }
+    }
+
+    // Gestion des commandes
+    private void handleUndo() {
+        if (game.canUndo()) {
+            game.undo();
+            view.displayBoard(game);
+            view.showUndoMessage();
+        } else {
+            view.showErrorMessage("Aucune action à annuler !");
+        }
+    }
+
+    private void handleRedo() {
+        if (game.canRedo()) {
+            game.redo();
+            view.displayBoard(game);
+            view.showRedoMessage();
+        } else {
+            view.showErrorMessage("Aucune action à rejouer !");
+        }
+    }
+
+    private void handleGiveUp() {
+        view.showQuitMessage();
+        System.exit(0);
+    }
+
+    private void handleTotemCommand(Matcher matcherTotem) {
+        int x = Integer.parseInt(matcherTotem.group(1));
+        int y = Integer.parseInt(matcherTotem.group(2));
+        String mark = matcherTotem.group(3);
+
+        try {
+            placeTotem(mark, x, y);
+            view.displayBoard(game);
+
+
+        } catch (OxonoExecption e) {
+            view.showErrorMessage("Erreur : " + e.getMessage());
+        }
+    }
+
+    private void handlePawnCommand(Matcher matcherPawn) {
+        String mark = matcherPawn.group(1);
+        String color = matcherPawn.group(2);
+        int x = Integer.parseInt(matcherPawn.group(3));
+        int y = Integer.parseInt(matcherPawn.group(4));
+
+        try {
+            placePawnOX(mark, color, x, y);
+            view.displayBoard(game);
+            view.displayRack(game.getRemainingPawns());
+        } catch (OxonoExecption e) {
+            view.showErrorMessage("Erreur : " + e.getMessage());
+        }
     }
 
 
+    @Override
+    public void update(ObservableEvent event) {
+        switch (event) {
+            case WIN:
+                view.showWinMessage(game.getCurrentPlayer());
+                break;
 
+            case GAME_START:
+                view.showRestartMessage();
+                break;
+            case UNDO:
+                view.showUndoMessage();
+                view.displayBoard(game);
+                break;
+            case REDO:
+                view.showRedoMessage();
+                view.displayBoard(game);
+
+                break;
+            case DRAW:
+                view.showQuitMessage();
+                System.exit(0);
+                break;
+            case MOVE_TOTEM:
+                view.displayBoard(game);
+                break;
+            case PLACE_PAWN:
+                view.displayBoard(game);
+                break;
+
+            case QUIT :
+                view.showQuitMessage();
+                System.exit(0);
+                break;
+        }
+
+    }
 }
+
+
+

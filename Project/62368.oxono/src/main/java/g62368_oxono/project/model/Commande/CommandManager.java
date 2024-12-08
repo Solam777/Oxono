@@ -7,6 +7,9 @@ public class CommandManager {
     private Stack<Command> redoStack = new Stack<>();
 
     public void executeCommand(Command command) {
+        command.execute();
+        undoStack.push(command);
+        redoStack.clear();
 
     }
 

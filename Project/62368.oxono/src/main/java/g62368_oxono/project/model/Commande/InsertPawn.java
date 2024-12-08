@@ -26,8 +26,8 @@ public class InsertPawn implements Command  {
         if (player.hasPawn(pawn.getMark())){
             player.removePawn(pawn);
             board.placePawn(pawnPosition,pawn);
-        }
 
+        }
     }
 
     @Override

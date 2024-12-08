@@ -56,25 +56,30 @@ public class Player {
         return pawnsX;
     }
 
-    public Stack<Pawn> getPawnsO() {
+    public Stack<Pawn>  getPawnsO() {
         return pawnsO;
     }
-     public void reset() {
-        pawnsX.clear();
-        pawnsO.clear();
-        for (int i = 0; i < 8; i++) {
-            pawnsO.add(new Pawn(Mark.O, color));
-            pawnsX.add(new Pawn(Mark.X, color));
-        }
-     }
 
-    //    public Stack<Pawn> getPion_X_du_joueur() {
-//        return pion_X_du_joueur;
-//    }
-//
-//    public Stack<Pawn> getPion_O_du_joueur() {
-//        return pion_O_du_joueur;
-//    }
+    public Pawn getNextPawn(Mark mark) {
+         if(mark == Mark.X) {
+             if (!pawnsX.isEmpty()) {
+                 return pawnsX.removeFirst(); // Récupère et supprime le premier pion X
+             }
+         }
+         else if (mark == Mark.O){
+             if (!pawnsO.isEmpty()) {
+                 return pawnsO.removeFirst(); // Récupère et supprime le premier pion O
+             }
+
+         }
+             throw new OxonoExecption("Aucun pion disponible pour ce joueur");
+
+    }
+
+
+
+
+
 
 
 }

@@ -1,0 +1,142 @@
+/* Root container */
+.root {
+    -fx-background-color: #5c94fc; 
+    -fx-font-family: "Press Start 2P", "Courier New", monospace;
+    /*-fx-background-image: url('../images/mario-bg-pattern.jpg');*/
+    -fx-background-repeat: repeat;
+}
+
+/* Board styles */
+.board-container {
+    -fx-background-color: #985f40;
+    -fx-padding: 20px;
+    -fx-border-color: #000000;
+    -fx-border-width: 4px;
+    -fx-border-style: solid;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.6), 10, 0, 0, 0);
+    border: 2px solid #000;
+    width: 600px;
+    height: 600px;
+}
+
+.board-cell {
+    -fx-background-color: #f8d193;
+    -fx-border-color: #000000;
+    -fx-border-width: 2px;
+    -fx-min-width: 80px;
+    -fx-min-height: 80px;
+    -fx-cursor: hand;
+}
+
+.board-cell:hover {
+    -fx-background-color: #fbd000;
+    -fx-effect: dropshadow(three-pass-box, #fbd000, 5, 0, 0, 0);
+}
+
+.valid-move {
+    -fx-background-color: #50c878;
+    -fx-border-style: dashed;
+}
+
+.hover-move {
+    -fx-background-color: #4a90e2;
+    -fx-border-style: dashed;
+}
+
+/* Header styles */
+.header {
+    -fx-background-color: #985f40;
+    -fx-padding: 15px;
+    -fx-border-color: #000000;
+    -fx-border-width: 4px;
+    -fx-border-style: solid;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.6), 8, 0, 0, 0);
+}
+
+.player-turn-label {
+    -fx-text-fill: #ffffff;
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+    -fx-effect: dropshadow(three-pass-box, #000000, 2, 0, 0, 0);
+}
+
+/* Button styles */
+.game-button {
+    -fx-background-color: #e52521;
+    -fx-text-fill: #ffffff;
+    -fx-font-size: 14px;
+    -fx-padding: 8px 16px;
+    -fx-border-color: #000000;
+    -fx-border-width: 3px;
+    -fx-border-style: solid;
+    -fx-cursor: hand;
+}
+
+.game-button:hover {
+    -fx-background-color: #ff3530;
+    -fx-translate-y: -2px;
+}
+
+.game-button:pressed {
+    -fx-background-color: #c41e1a;
+    -fx-translate-y: 2px;
+}
+
+/* Player racks styles */
+.rack-container {
+    -fx-background-color: #985f40;
+    -fx-padding: 15px;
+    -fx-border-color: #000000;
+    -fx-border-width: 4px;
+    -fx-spacing: 20px;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.6), 8, 0, 0, 0);
+}
+
+.rack-label {
+    -fx-text-fill: #ffffff;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-effect: dropshadow(three-pass-box, #000000, 2, 0, 0, 0);
+}
+
+.pawns-container {
+    -fx-spacing: 10px;
+    -fx-padding: 10px;
+    -fx-background-color: #f8d193;
+    -fx-border-color: #000000;
+    -fx-border-width: 3px;
+}
+
+/* Status label styles */
+.status-label {
+    -fx-text-fill: #ffffff;
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+    -fx-padding: 10px;
+    -fx-background-color: #985f40;
+    -fx-border-color: #000000;
+    -fx-border-width: 3px;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.6), 5, 0, 0, 0);
+}
+
+/* Animations */
+@keyframes victory-jump {
+    0% { -fx-translate-y: 0px; }
+    50% { -fx-translate-y: -10px; }
+    100% { -fx-translate-y: 0px; }
+}
+
+.victory-cell {
+    -fx-background-color: #fbd000;
+    -animation: victory-jump 0.5s infinite;
+}
+
+@keyframes coin-spin {
+    0% { -fx-scale-x: 1; }
+    50% { -fx-scale-x: 0.1; }
+    100% { -fx-scale-x: 1; }
+}
+
+.valid-move:hover {
+    animation: coin-spin 0.3s ease-in-out;
+}

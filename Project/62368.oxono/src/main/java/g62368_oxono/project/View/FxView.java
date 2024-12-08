@@ -1,0 +1,247 @@
+package g62368_oxono.project.View;
+
+import g62368_oxono.project.Controller.JeuFx;
+import g62368_oxono.project.model.*;
+import g62368_oxono.project.model.Observer.ObservableEvent;
+import g62368_oxono.project.model.Observer.Observer;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
+import javafx.scene.Node;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Region;
+import javafx.scene.layout.VBox;
+
+import org.controlsfx.control.spreadsheet.Grid;
+
+
+import javax.swing.*;
+import java.util.Arrays;
+import java.util.Objects;
+
+public class FxView  {
+    private BoardFx boardFx;
+    private VBox root;
+    private JeuFx controller;
+    private VBox pinkPlayerRack;
+    private VBox blackPlayerRack;
+    private Button giveUpButton;
+    private Button undoButton;
+
+    public Button getRedoButton() {
+        return redoButton;
+    }
+
+    public Button getGiveUpButton() {
+        return giveUpButton;
+    }
+
+    public Button getUndoButton() {
+        return undoButton;
+    }
+
+    private Button redoButton;
+
+
+    public FxView() {
+        createView();
+        root.getStylesheets().add(getClass().getResource("/style/style.css").toExternalForm());
+
+
+    }
+    public void setController(JeuFx controller) {
+        this.controller = controller;
+        boardFx.setController(controller);
+    }
+
+    public VBox getRoot() {
+        return root;
+    }
+
+    public void createView() {
+        root = new VBox(30);
+        root.setPadding(new Insets(25));
+        root.setAlignment(Pos.CENTER);
+
+
+        VBox gameContainer = new VBox(20);
+        gameContainer.setAlignment(Pos.CENTER);
+
+        HBox header = Header();
+        HBox boardGrid = new HBox();
+        boardFx = new BoardFx(6, 800, 600);
+        boardGrid.setAlignment(Pos.CENTER);
+
+        boardGrid.getChildren().add(boardFx.getGridPane());
+        HBox playerRacks = createPlayerRacks();
+
+
+
+        Label statusLabel = new Label("");
+        statusLabel.getStyleClass().add("status-label");
+
+        gameContainer.getChildren().addAll(header, boardGrid, playerRacks, statusLabel);
+        root.getChildren().add(gameContainer);
+    }
+
+
+
+    public static void setStatus(String sélectionnezOùDéplacerLeTotem) {
+        Label label = new Label();
+        label.setText("sélectionnez "+ " Où"+ " DéplacerLeTotem");
+    }
+
+
+    /*l'en tete */
+    private HBox Header(){
+        
+        HBox header = new HBox();
+        header.setAlignment(Pos.CENTER);
+        header.getStyleClass().add("header");
+
+        Label playerTurnLabel = new Label("Tour actuel: Joueur Rose");
+        playerTurnLabel.getStyleClass().add("player-turn-label");
+
+         giveUpButton = new Button("Give up");
+         undoButton = new Button("Retour");
+         redoButton = new Button("Refaire");
+
+        for (Button btn : Arrays.asList(undoButton, redoButton, giveUpButton)) {
+            btn.getStyleClass().add("game-button");
+        }
+
+        header.getChildren().addAll(redoButton, undoButton, giveUpButton,playerTurnLabel);
+        return header;
+
+    }
+
+    private GridPane boardGrid() {
+        GridPane grid = new GridPane();
+        grid.setAlignment(Pos.CENTER);
+        grid.setHgap(0);
+        grid.setVgap(0);
+        grid.getStyleClass().add("board-container");
+        return grid;
+    }
+
+    private HBox playRacks(){
+        HBox racks = new HBox();
+        racks.setAlignment(Pos.CENTER);
+        racks.getStyleClass().add("rack-container");
+
+        VBox pinkPlayerRack =  createPlayerRackSection("pink-player");
+        VBox blackPlayerRack =  createPlayerRackSection("black-player");
+
+        racks.getChildren().addAll(pinkPlayerRack, blackPlayerRack);
+        return racks;
+
+    }
+    /**
+     * Crée une section de rack pour un joueur
+     */
+    private VBox createPlayerRackSection(String playerName) {
+        VBox section = new VBox(10);
+        section.setAlignment(Pos.CENTER);
+        // Limitez la largeur pour rendre les racks visuellement équilibrés
+        section.setPrefWidth(200);
+        section.setMaxWidth(200);
+
+        Label nameLabel = new Label(playerName);
+        nameLabel.getStyleClass().add("rack-label");
+
+        section.getChildren().add(nameLabel);
+        return section;
+    }
+    /**
+     * Crée les racks des joueurs
+     */
+    private HBox createPlayerRacks() {
+        HBox racksContainer = new HBox(30);
+        racksContainer.setAlignment(Pos.CENTER);
+        racksContainer.getStyleClass().add("rack-container");
+
+        pinkPlayerRack = createPlayerRackSection("Joueur Rose");
+
+        Region separator = new Region();
+        separator.getStyleClass().add("separator");
+        separator.setPrefHeight(2);
+        separator.setPrefWidth(50);
+        separator.setMaxWidth(Double.MAX_VALUE);
+
+        blackPlayerRack = createPlayerRackSection("Joueur Noir");
+
+        racksContainer.getChildren().addAll(pinkPlayerRack, blackPlayerRack);
+        return racksContainer;
+    }
+    /**
+     * Met à jour les racks des joueurs
+     */
+    private void updateRacks(int[] remainingPawns) {
+        updatePlayerRack(pinkPlayerRack, remainingPawns[0], remainingPawns[1], Color.PINK);
+        updatePlayerRack(blackPlayerRack, remainingPawns[2], remainingPawns[3], Color.BLACK);
+    }
+
+    /**
+     * Met à jour le rack d'un joueur
+     */
+    private void updatePlayerRack(VBox rack, int xPawns, int oPawns,Color color) {
+        // Garde le label du joueur
+        Node playerLabel = rack.getChildren().get(0);
+        rack.getChildren().clear();
+        rack.getChildren().add(playerLabel);
+
+        // Crée la ligne des pions X
+        VBox xSection = new VBox(5);
+        xSection.setAlignment(Pos.CENTER);
+        Label xLabel = new Label("Pions X");
+        xLabel.getStyleClass().add("rack-label");
+
+        HBox xPawnsBox = new HBox(5);
+        xPawnsBox.setAlignment(Pos.CENTER);
+        xPawnsBox.getStyleClass().add("pawns-container");
+
+        for (int i = 0; i < xPawns; i++) {
+            Pawn pawn = new Pawn(Mark.X,color);
+            PawnFx pawnFX = new PawnFx(pawn.getMark(),color, 40);
+            xPawnsBox.getChildren().add(pawnFX);
+        }
+        xSection.getChildren().addAll(xLabel, xPawnsBox);
+
+        // Crée la ligne des pions O
+        VBox oSection = new VBox(5);
+        oSection.setAlignment(Pos.CENTER);
+        Label oLabel = new Label("Pions O");
+        oLabel.getStyleClass().add("rack-label");
+
+        HBox oPawnsBox = new HBox(5);
+        oPawnsBox.setAlignment(Pos.CENTER);
+        oPawnsBox.getStyleClass().add("pawns-container");
+
+        for (int i = 0; i < oPawns; i++) {
+            Pawn pawn = new Pawn(Mark.O,color);
+            PawnFx pawnFX = new PawnFx(pawn.getMark(),color,40);
+            oPawnsBox.getChildren().add(pawnFX);
+        }
+        oSection.getChildren().addAll(oLabel, oPawnsBox);
+
+        rack.getChildren().addAll(xSection, oSection);
+    }
+
+
+
+
+    public void updateBoard(Game game) {
+        boardFx.updateBoard(game);
+        updateRacks(game.getRemainingPawns());
+    }
+
+
+
+
+
+
+
+
+}

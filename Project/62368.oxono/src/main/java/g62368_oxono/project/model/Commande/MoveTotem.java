@@ -21,13 +21,17 @@ public class MoveTotem implements Command {
 * totem move to where i will to*/
     @Override
     public void execute() {
-        board.placeTotem(to, totem);
+        board.setTotem(to, totem);
+
+
+
     }
 
     /*
     * totem just come back iitial pos*/
     @Override
     public void unexecute() {
-        board.placeTotem(from, totem);
+        board.setTotem(from, totem);
+
     }
 }

@@ -8,7 +8,7 @@ public class Board {
     private Position posTotemX;
     private Position posTotemO;
     private final int size;
-    private Totem lastMoveTotem;
+    Totem lastMoveTotem;
     private Pawn recentPawnPlace;
 
     public Board(int size) {
@@ -34,7 +34,6 @@ public class Board {
         }else {
             return posTotemO = getTotemPosition(Mark.O);
         }
-
     }
 
     /*
@@ -49,7 +48,9 @@ public class Board {
     public void placeTotem(Position position, Totem totem) {
         Position oldPosition = getTotemPosition(totem.getMark());
         validateMove(position, totem);
+        movesIfNotTotemSurrounded(position);
         updateTotem(position,totem,oldPosition);
+
     }
 
     /*mets a jour le bord en y placent le totem */
@@ -62,6 +63,7 @@ public class Board {
             posTotemO = position;
         }
         lastMoveTotem = totem;
+
     }
 
 
@@ -84,12 +86,10 @@ public class Board {
                 throw new OxonoExecption("position is bound");
             }
         }
-        if ( newPosition.x() == oldPosition.x() || newPosition.y() == oldPosition.y()){
-           return;
+        if (!movesIfNotTotemSurrounded(oldPosition).contains(newPosition)){
+           throw new OxonoExecption("position n'est pas valide ou  pas libre");
         }
-        else {
-            throw new OxonoExecption("La position est incorrecte");
-        }
+
 
     }
 
@@ -126,31 +126,42 @@ public class Board {
             int newX = position.x() + dir.getX(); // on recupere le x de la direction
             int newY = position.y() + dir.getY(); // on recupere le y de la direction
 
-            while (isInside(new Position(newX, newY))) {
-                if (isEmpty(new Position(newX, newY))) {
-                    emptyPositions.add(new Position(newX, newY));
-                    break; // Ajoute la première position vide trouvée dans cette direction
+            Position newPOsition = new Position(newX,newY);
+            if (isInside(newPOsition)) {
+                if (isEmpty(newPOsition)) {
+                    emptyPositions.add(newPOsition);
+                    //System.out.println(newPOsition);
                 }
-                newX += dir.getX();
-                newY += dir.getY();
             }
         }
         return emptyPositions;
     }
-    public List<Position> emptypositionDirection(Position position){
+
+
+    public List<Position> movesIfNotTotemSurrounded(Position position) {
         List<Position> emptyPositions = new ArrayList<>();
         for (Direction dir : Direction.values()) {
             int newX = position.x() + dir.getX(); // on recupere le x de la direction
             int newY = position.y() + dir.getY(); // on recupere le y de la direction
 
-            if (isInside(new Position(newX, newY))) {
-                if (isEmpty(new Position(newX, newY))) {
-                    emptyPositions.add(new Position(newX, newY));
+            Position newPOsition = new Position(newX,newY);
+            while (isInside(newPOsition)) {
+                if (isEmpty(newPOsition)) {
+                    emptyPositions.add(newPOsition);
+                    //System.out.println(newPOsition);
                 }
+                else {
+                    break;
+                }
+                newX += dir.getX();
+                newY += dir.getY();
+                newPOsition = new Position(newX,newY);
             }
         }
         return emptyPositions;
     }
+
+
 
     /*
      * une liste de toutes les positions vides du board
@@ -267,12 +278,11 @@ public class Board {
 
     public void placePawn(Position position, Pawn pawn) {
 
-        Totem totem = findTheTotem(pawn.getMark());
-        if (totem == null) {
+        if (lastMoveTotem == null) {
             throw new OxonoExecption("Aucun totem n'a été déplacé ou initialisé.");
         }
         //recupere le totem a la derniere position
-        Position totemPosition = getTotemPosition(totem.getMark());
+        Position totemPosition = getTotemPosition(lastMoveTotem.getMark());
 
         if (isSurrounded(totemPosition)) {
             if (!allEmptyPositions().contains(position)) {
@@ -283,20 +293,16 @@ public class Board {
                 throw new OxonoExecption("La position choisie n'est pas vide ou pas adjacente au totem");
             }
         }
-        if (totem.getMark() != pawn.getMark()) {
+        if (lastMoveTotem.getMark() != pawn.getMark()) {
             throw new OxonoExecption("Le pion ne peut pas être placé si la mark du totem est diff.");
         }
         board[position.x()][position.y()] = pawn;
         recentPawnPlace = pawn;
     }
 
-    public Pawn getRecentPawnPlace() {
-        return recentPawnPlace;
-    }
-
 
     // trouve le totem avec la mark souhaite
-    public Totem findTheTotem(Mark mark) {
+    public Totem returnTheTotem(Mark mark) {
        if (mark == Mark.O){
          return  (Totem) getPiece(posTotemO);
        }
@@ -308,9 +314,7 @@ public class Board {
     public void setpawn(Position position, Pawn pawn) {
         board [position.x()][position.y()] = pawn ;
     }
-    // peut bouger le totem au premiere endroit dans toute les positions s'il est encercle
-    public void fisrtPositinDirection(Position position) {
-    }
+
 
     public void removePawn(Position pawnPosition) {
         if (!isEmpty(pawnPosition)) {
@@ -319,6 +323,24 @@ public class Board {
     }
     public boolean isTotem(Piece piece) {
         return piece instanceof Totem;
+    }
+
+    public void setTotem(Position position, Totem totem){
+        Position old =getTotemPosition(totem.getMark());
+
+        board[position.x()][position.y()] = totem;
+
+        updateTotem(position, totem, old);
+
+    }
+
+    public void clearBoard(Position position) {
+        board[position.x()][position.y()] = null;
+
+    }
+
+    public void setPawn(Position position,Pawn pawn){
+        board[position.x()][position.y()] = pawn;
     }
 
 }

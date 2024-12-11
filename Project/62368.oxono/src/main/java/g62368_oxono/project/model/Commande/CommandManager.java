@@ -30,11 +30,6 @@ public class CommandManager {
     }
 
 
-    public void clearHistory() {
-        undoStack.clear();
-        redoStack.clear();
-    }
-
     public Stack<Command> getUndoStack() {
         return undoStack;
     }

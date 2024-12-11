@@ -201,7 +201,7 @@ public class BoardTest {
 
     public void lastTotem() {
         board.placeTotem(new Position(  0,3),board.returnTheTotem(Mark.O));
-        System.out.println(board.getLastMoveTotem(new Totem(Mark.O)));
+        System.out.println(board.getPosLastMoveTotem(new Totem(Mark.O)));
     }
 
     @Test

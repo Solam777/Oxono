@@ -23,6 +23,7 @@ public class OxonoApp extends Application {
         primaryStage.setTitle("Jeu OXONO");
         primaryStage.setScene(scene);
         primaryStage.show();
+        controller.showStartDialog();
     }
 
     public static void main(String[] args) {

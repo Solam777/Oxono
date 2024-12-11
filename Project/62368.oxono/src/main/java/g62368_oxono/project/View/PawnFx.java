@@ -20,6 +20,8 @@ public class PawnFx extends Rectangle {
                 setFill(new ImagePattern(ImageFx.getImagePath("PawnPinkX")));
                 setScaleX(2);
                 setScaleY(2);
+                setHeight(35);
+                setWidth(33);
 
             } else if (color == Color.BLACK) {
                 setFill(new ImagePattern(ImageFx.getImagePath("PawnBlackX")));

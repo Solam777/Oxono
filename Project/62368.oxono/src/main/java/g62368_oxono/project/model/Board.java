@@ -28,7 +28,7 @@ public class Board {
         return size;
     }
 
-    public Position getLastMoveTotem(Totem totem) {
+    public Position getPosLastMoveTotem(Totem totem) {
         if (totem.getMark() == Mark.X) {
             return posTotemX =  getTotemPosition(Mark.X);
         }else {
@@ -47,7 +47,7 @@ public class Board {
    place le totem sur le bord si toutes les conditions y sont*/
     public void placeTotem(Position position, Totem totem) {
         Position oldPosition = getTotemPosition(totem.getMark());
-        validateMove(position, totem);
+        validateMoveTotem(position, totem);
         movesIfNotTotemSurrounded(position);
         updateTotem(position,totem,oldPosition);
 
@@ -63,9 +63,7 @@ public class Board {
             posTotemO = position;
         }
         lastMoveTotem = totem;
-
     }
-
 
 
     /*
@@ -76,26 +74,26 @@ public class Board {
     }
 
     /*verifie si la postion est valid ou l'on veut placer notre totem ou sil est entrourre ou pas */
-    public void validateMove( Position newPosition,Totem totem) {
+    public void validateMoveTotem(Position newPosition, Totem totem) {
         if (!isInside(newPosition) || (!isEmpty(newPosition))) {
             throw new OxonoExecption("La position est en dehors des limites ou deja occupe");
         }
         Position oldPosition = getTotemPosition(totem.getMark());
-        if (isSurrounded(oldPosition)){
-            if (!movesIfTotemSurrounded(oldPosition).contains(newPosition)){
-                throw new OxonoExecption("position is bound");
+
+        // Si le totem est entouré, on vérifie uniquement movesIfTotemSurrounded
+        if (isSurrounded(oldPosition)) {
+            if (!movesIfTotemSurrounded(oldPosition).contains(newPosition)) {
+                throw new OxonoExecption("La position choisie n'est pas valide car le totem est entouré.");
             }
-        }
-        if (!movesIfNotTotemSurrounded(oldPosition).contains(newPosition)){
-           throw new OxonoExecption("position n'est pas valide ou  pas libre");
+            return; // On sort de la méthode car le mouvement est valide
         }
 
-
+        // Si le totem n'est pas entouré, on vérifie movesIfNotTotemSurrounded
+        if (!movesIfNotTotemSurrounded(oldPosition).contains(newPosition)) {
+            throw new OxonoExecption("position n'est pas valide ou pas libre");
+        }
     }
 
-    /*
-     *
-     * */
     public boolean isEmpty(Position position) {
         return board[position.x()][position.y()] == null;
     }
@@ -121,20 +119,40 @@ public class Board {
      * nous donnes les positions vide de chaque direction en fonctions de la postion
      * */
     public List<Position> movesIfTotemSurrounded(Position position) {
-        List<Position> emptyPositions = new ArrayList<>();
-        for (Direction dir : Direction.values()) {
-            int newX = position.x() + dir.getX(); // on recupere le x de la direction
-            int newY = position.y() + dir.getY(); // on recupere le y de la direction
+        List<Position> validPositions = new ArrayList<>();
+        boolean anyEmptyFound = false;
 
-            Position newPOsition = new Position(newX,newY);
-            if (isInside(newPOsition)) {
-                if (isEmpty(newPOsition)) {
-                    emptyPositions.add(newPOsition);
-                    //System.out.println(newPOsition);
+
+        for (Direction dir : Direction.values()) {
+            int currentX = position.x();
+            int currentY = position.y();
+
+            while (true) {
+                // Aller à la case suivante dans la direction
+                currentX += dir.getX();
+                currentY += dir.getY();
+
+                Position nextPosition = new Position(currentX, currentY);
+
+                // Vérifier si la position est en dehors du plateau
+                if (!isInside(nextPosition)) break;
+
+                // Si une case vide est trouvée, l'ajouter et sortir de cette direction
+                if (isEmpty(nextPosition)) {
+                    validPositions.add(nextPosition);
+                    anyEmptyFound = true;
+                    break;
                 }
             }
         }
-        return emptyPositions;
+
+        // Si aucune position vide n'est trouvée dans toutes les directions
+        if (!anyEmptyFound) {
+
+            return allEmptyPositions();
+        }
+
+        return validPositions;
     }
 
 
@@ -162,7 +180,6 @@ public class Board {
     }
 
 
-
     /*
      * une liste de toutes les positions vides du board
      * */
@@ -180,7 +197,7 @@ public class Board {
 
     /*
      * verifie si la ligne est gagnante soit avec 4 couleur  ou 4 mark aligne */
-    public boolean Iswin(Position position, Pawn pawn) {
+    public boolean isWin(Position position, Pawn pawn) {
         return checkLine(position.x(), pawn) || checkColumn(position.y(), pawn);
     }
 
@@ -189,24 +206,20 @@ public class Board {
     public boolean checkLine(int x, Pawn pawn) {
         int occurenceColor = 0;
         int occurenceMark = 0;
-
         for (int i = 0; i < size; i++) {
             Piece piece = getPiece(new Position(x, i)); // Récupérer la pièce à la position
-
             // ignorer les cases vides
             if (piece == null) {
                 occurenceMark = 0;
                 occurenceColor = 0;
                 continue; // On passe directement a la prochaine neumeration en sautant le restant du bloc
             }
-
             // Si c'est un Totem, réinitialiser les compteurs
             if (piece instanceof Totem) {
                 occurenceMark = 0;
                 occurenceColor = 0;
                 continue;
             }
-
             // Vérification des propriétés si c'est un Pawn
             if (piece instanceof Pawn pawn1) {
                 if (pawn.getMark() == pawn1.getMark()) {
@@ -214,15 +227,13 @@ public class Board {
                 } else {
                     occurenceMark = 0;
                 }
-
                 if (pawn.getColor() == pawn1.getColor()) {
                     occurenceColor++;
                 } else {
                     occurenceColor = 0;
                 }
             }
-            // Si une séquence gagnante est détectée, retourner immédiatement true
-            if (occurenceColor == 4 || occurenceMark == 4) {
+            if (occurenceColor >= 4 || occurenceMark >= 4) {
                 return true;
             }
         }
@@ -231,18 +242,16 @@ public class Board {
 
     /*
      * check if each case in the column is same(about color or mark )*/
-    public boolean checkColumn(int x, Pawn pawn) {
+    public boolean checkColumn(int y, Pawn pawn) {
         int occurenceColor = 0;
         int occurenceMark = 0;
-
         for (int i = 0; i < size; i++) {
-            Piece piece = getPiece(new Position(i, x)); // Récupérer la pièce à la position
-
+            Piece piece = getPiece(new Position(i, y)); // Récupérer la pièce à la position
             // ignorer les cases vides
             if (piece == null) {
                 occurenceMark = 0;
                 occurenceColor = 0;
-                continue; // On passe directement a la prochaine neumeration en sautant le restant du bloc
+                continue; // On passe directement à la prochaine itération
             }
             // Si c'est un Totem, réinitialiser les compteurs
             if (piece instanceof Totem) {
@@ -257,7 +266,6 @@ public class Board {
                 } else {
                     occurenceMark = 0;
                 }
-
                 if (pawn.getColor() == pawn1.getColor()) {
                     occurenceColor++;
                 } else {
@@ -265,11 +273,11 @@ public class Board {
                 }
             }
             // Si une séquence gagnante est détectée, retourner immédiatement true
-            if (occurenceColor == 4 || occurenceMark == 4) {
+            if (occurenceColor >= 4 || occurenceMark >= 4) {
                 return true;
             }
         }
-        return false;
+        return false; // Aucun alignement détecté
     }
 
     public Piece getPiece(Position position) {
@@ -277,27 +285,36 @@ public class Board {
     }
 
     public void placePawn(Position position, Pawn pawn) {
-
         if (lastMoveTotem == null) {
             throw new OxonoExecption("Aucun totem n'a été déplacé ou initialisé.");
         }
-        //recupere le totem a la derniere position
+
         Position totemPosition = getTotemPosition(lastMoveTotem.getMark());
 
         if (isSurrounded(totemPosition)) {
+            // Si le totem est entouré, le pion peut être placé sur n'importe quelle case vide
             if (!allEmptyPositions().contains(position)) {
                 throw new OxonoExecption("La position choisie n'est pas vide.");
             }
         } else {
-            if (!movesIfTotemSurrounded(totemPosition).contains(position)) {
-                throw new OxonoExecption("La position choisie n'est pas vide ou pas adjacente au totem");
+            // Si le totem n'est pas entouré, le pion doit être placé sur une case adjacente vide
+            if (!movesIfNotTotemSurrounded(totemPosition).contains(position)) {
+                throw new OxonoExecption("La position choisie n'est pas adjacente au totem ou n'est pas vide");
             }
         }
+
         if (lastMoveTotem.getMark() != pawn.getMark()) {
-            throw new OxonoExecption("Le pion ne peut pas être placé si la mark du totem est diff.");
+            throw new OxonoExecption("Le pion ne peut pas être placé si la mark du totem est différente.");
         }
+        if (!getValidMovesPawn(lastMoveTotem).contains(position)) {
+            System.out.println("La position choisie n'est pas une des positions valides pour ce pion.");
+            throw new OxonoExecption("La position choisie n'est pas une des positions valides pour ce pion.");
+        }
+
         board[position.x()][position.y()] = pawn;
         recentPawnPlace = pawn;
+        System.out.println("Pion placé à la position : " + position);
+
     }
 
 
@@ -310,11 +327,6 @@ public class Board {
            return (Totem) getPiece(posTotemX);
        }
     }
-
-    public void setpawn(Position position, Pawn pawn) {
-        board [position.x()][position.y()] = pawn ;
-    }
-
 
     public void removePawn(Position pawnPosition) {
         if (!isEmpty(pawnPosition)) {
@@ -334,13 +346,30 @@ public class Board {
 
     }
 
-    public void clearBoard(Position position) {
-        board[position.x()][position.y()] = null;
-
+    public List<Position> getValidMovesTotem(Totem totem) {
+        Position totemPosition = getTotemPosition(totem.getMark());
+        if (isSurrounded(totemPosition)) {
+            return movesIfTotemSurrounded(totemPosition);
+        } else {
+            return movesIfNotTotemSurrounded(totemPosition);
+        }
     }
 
-    public void setPawn(Position position,Pawn pawn){
-        board[position.x()][position.y()] = pawn;
+    public List<Position> getValidMovesPawn(Totem totem) {
+        Position positionTotem = getPosLastMoveTotem(totem);
+        List<Position> posValid = new ArrayList<>();
+
+        for (Direction dir : Direction.values()) {
+            int currentX = positionTotem.x() + dir.getX();
+            int currentY = positionTotem.y() + dir.getY();
+            Position posPossible = new Position(currentX, currentY);
+
+            // Vérifiez si la position est à l'intérieur du plateau et vide
+            if (isInside(posPossible) && isEmpty(posPossible)) {
+                posValid.add(posPossible);
+            }
+        }
+        return posValid;
     }
 
 }

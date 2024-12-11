@@ -24,7 +24,6 @@ public class MoveTotem implements Command {
         board.setTotem(to, totem);
 
 
-
     }
 
     /*

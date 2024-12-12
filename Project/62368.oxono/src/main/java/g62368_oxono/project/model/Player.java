@@ -42,12 +42,6 @@ public class Player {
        return mark == Mark.X ? pawnsX.size() : pawnsO.size();
     }
 
-
-    public void setdraw(){
-        pawnsX.clear();
-        pawnsO.clear();
-    }
-
     public Color getColor() {
         return color;
     }
@@ -59,27 +53,6 @@ public class Player {
     public Stack<Pawn>  getPawnsO() {
         return pawnsO;
     }
-
-    public Pawn getNextPawn(Mark mark) {
-         if(mark == Mark.X) {
-             if (!pawnsX.isEmpty()) {
-                 return pawnsX.removeFirst(); // Récupère et supprime le premier pion X
-             }
-         }
-         else if (mark == Mark.O){
-             if (!pawnsO.isEmpty()) {
-                 return pawnsO.removeFirst(); // Récupère et supprime le premier pion O
-             }
-
-         }
-             throw new OxonoExecption("Aucun pion disponible pour ce joueur");
-
-    }
-
-
-
-
-
 
 
 }

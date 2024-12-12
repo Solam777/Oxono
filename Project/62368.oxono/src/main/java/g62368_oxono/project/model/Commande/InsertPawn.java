@@ -23,16 +23,12 @@ public class InsertPawn implements Command  {
 
     @Override
     public void execute() {
-        if (player.hasPawn(pawn.getMark())){
-            board.placePawn(pawnPosition,pawn);
-
-        }
+        board.setPawn(pawnPosition,pawn);
     }
 
     @Override
     public void unexecute() {
         player.addPawn(pawn);
         board.removePawn(pawnPosition);
-
     }
 }

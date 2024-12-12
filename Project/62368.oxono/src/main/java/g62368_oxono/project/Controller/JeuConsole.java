@@ -63,20 +63,21 @@ public class JeuConsole implements Observer {
     private void placePawnOX(String mark, String color, int x, int y) {
         if (mark.equalsIgnoreCase("x")) {
             if (color.equalsIgnoreCase("b")) {
-                game.playPawn(new Position(x, y), new Pawn(Mark.X, Color.BLACK));
+                game.playPawn(new Position(x, y));
                 System.out.println("placement du pion X en (" + x + "," + y + ")");
             } else if (color.equalsIgnoreCase("p")) {
-                game.playPawn(new Position(x, y), new Pawn(Mark.X, Color.PINK));
+
+                game.playPawn(new Position(x, y));
                 System.out.println("Placement du pion X en (" + x + "," + y + ")");
             } else {
                 System.out.println("Couleur invalide.");
             }
         } else if (mark.equalsIgnoreCase("o")) {
             if (color.equalsIgnoreCase("b")) {
-                game.playPawn(new Position(x, y), new Pawn(Mark.O, Color.BLACK));
+                game.playPawn(new Position(x, y));
                 System.out.println("Placement du pion O en (" + x + "," + y + ")");
             } else if (color.equalsIgnoreCase("p")) {
-                game.playPawn(new Position(x, y), new Pawn(Mark.O, Color.PINK));
+                game.playPawn(new Position(x, y));
                 System.out.println("Placement du pion O en (" + x + "," + y + ")");
             } else {
                 System.out.println("Couleur invalide.");

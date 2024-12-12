@@ -22,8 +22,6 @@ public class MoveTotem implements Command {
     @Override
     public void execute() {
         board.setTotem(to, totem);
-
-
     }
 
     /*
@@ -31,6 +29,5 @@ public class MoveTotem implements Command {
     @Override
     public void unexecute() {
         board.setTotem(from, totem);
-
     }
 }

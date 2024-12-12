@@ -2,14 +2,20 @@ package g62368_oxono.project.View;
 
 import g62368_oxono.project.Controller.JeuFx;
 import g62368_oxono.project.model.*;
+import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.*;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
 
 
+import java.awt.event.ActionEvent;
 import java.util.Arrays;
 
 public class FxView  {
@@ -130,6 +136,7 @@ public class FxView  {
     public void updateRacks(int[] remainingPawns) {
         updatePlayerRack(pinkPlayerRack, remainingPawns[0], remainingPawns[1], Color.PINK);
         updatePlayerRack(blackPlayerRack, remainingPawns[2], remainingPawns[3], Color.BLACK);
+
     }
 
     /**
@@ -196,7 +203,17 @@ public class FxView  {
 
     public void updateBoard(Game game) {
         boardFx.updateBoard(game);
-       // updateRacks(game.getRemainingPawns());
         playerTurnLabel.setText("Tour actuel: Joueur " + (game.getCurrentPlayer().getColor() == Color.PINK ? "Rose" : "Noir"));
+    }
+    private void clickShow(ActionEvent event) {
+        Stage stage = new Stage();
+        Parent root = FXMLLoader.load(
+                FxView.class.getResource("YourClass.fxml"));
+        stage.setScene(new Scene(root));
+        stage.setTitle("My modal window");
+        stage.initModality(Modality.WINDOW_MODAL);
+        stage.initOwner(
+                ((Node)event.getSource()).getScene().getWindow() );
+        stage.show();
     }
 }

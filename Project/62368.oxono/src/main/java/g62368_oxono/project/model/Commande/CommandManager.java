@@ -4,13 +4,19 @@ import java.util.Stack;
 
 public class CommandManager {
     private Stack<Command> undoStack = new Stack<>();
+
+    public boolean isIsplacepawn() {
+        return isplacepawn;
+    }
+
     private Stack<Command> redoStack = new Stack<>();
+    private boolean isplacepawn = false;
 
     public void executeCommand(Command command) {
         command.execute();
         undoStack.push(command);
         redoStack.clear();
-
+        isplacepawn = true;
     }
 
     public void undo() {

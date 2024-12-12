@@ -148,10 +148,8 @@ public class Board {
 
         // Si aucune position vide n'est trouvée dans toutes les directions
         if (!anyEmptyFound) {
-
             return allEmptyPositions();
         }
-
         return validPositions;
     }
 
@@ -307,14 +305,12 @@ public class Board {
             throw new OxonoExecption("Le pion ne peut pas être placé si la mark du totem est différente.");
         }
         if (!getValidMovesPawn(lastMoveTotem).contains(position)) {
-            System.out.println("La position choisie n'est pas une des positions valides pour ce pion.");
-            throw new OxonoExecption("La position choisie n'est pas une des positions valides pour ce pion.");
+             throw new OxonoExecption("La position choisie n'est pas une des positions valides pour ce pion.");
         }
 
         board[position.x()][position.y()] = pawn;
         recentPawnPlace = pawn;
         System.out.println("Pion placé à la position : " + position);
-
     }
 
 
@@ -344,6 +340,10 @@ public class Board {
 
         updateTotem(position, totem, old);
 
+    }
+
+    public void setPawn(Position position, Pawn pawn) {
+        board[position.x()][position.y()] = pawn;
     }
 
     public List<Position> getValidMovesTotem(Totem totem) {

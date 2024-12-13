@@ -286,7 +286,6 @@ public class Board {
         if (lastMoveTotem == null) {
             throw new OxonoExecption("Aucun totem n'a été déplacé ou initialisé.");
         }
-
         Position totemPosition = getTotemPosition(lastMoveTotem.getMark());
 
         if (isSurrounded(totemPosition)) {

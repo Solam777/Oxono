@@ -205,15 +205,15 @@ public class FxView  {
         boardFx.updateBoard(game);
         playerTurnLabel.setText("Tour actuel: Joueur " + (game.getCurrentPlayer().getColor() == Color.PINK ? "Rose" : "Noir"));
     }
-    private void clickShow(ActionEvent event) {
-        Stage stage = new Stage();
-        Parent root = FXMLLoader.load(
-                FxView.class.getResource("YourClass.fxml"));
-        stage.setScene(new Scene(root));
-        stage.setTitle("My modal window");
-        stage.initModality(Modality.WINDOW_MODAL);
-        stage.initOwner(
-                ((Node)event.getSource()).getScene().getWindow() );
-        stage.show();
-    }
+//    private void clickShow(ActionEvent event) {
+//        Stage stage = new Stage();
+//        Parent root = FXMLLoader.load(
+//                FxView.class.getResource("YourClass.fxml"));
+//        stage.setScene(new Scene(root));
+//        stage.setTitle("My modal window");
+//        stage.initModality(Modality.WINDOW_MODAL);
+//        stage.initOwner(
+//                ((Node)event.getSource()).getScene().getWindow() );
+//        stage.show();
+//    }
 }

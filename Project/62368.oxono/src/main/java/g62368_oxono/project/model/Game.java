@@ -74,7 +74,6 @@ public class Game implements Observable {
                 }
                 canPlacePawn = false;
 
-
             }
             else {
                 System.out.println("Impossible jouer un pawn");

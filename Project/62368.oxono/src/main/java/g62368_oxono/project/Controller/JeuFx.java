@@ -48,33 +48,75 @@ public class JeuFx implements Observer {
     }
 
     private void handlePlayBot() {
-        List<Position> positionsValideTotem = game.getFreeposTotem(lastTotemPlay);
-        List<Position> positionsValidePawn = game.getFreeposPawn(lastTotemPlay);
+        try {
+            // Choix aléatoire du totem (O ou X)
+            int indexChoice = getRandom(0, 1);
+            lastTotemPlay = new Totem(indexChoice == 0 ? Mark.O : Mark.X);
 
-        int indexpawn= getRandom(0, positionsValidePawn.size());
-        Position posPawn = positionsValidePawn.get(indexpawn);
+            // Récupération des positions valides
+            List<Position> positionsValideTotem = game.getFreeposTotem(lastTotemPlay);
 
-        int indexTotem= getRandom(0, positionsValideTotem.size());
-        Position posTotem = positionsValidePawn.get(indexTotem);
+            // Vérification si des positions valides existent pour le totem
+            if (positionsValideTotem.isEmpty()) {
+                FxView.setStatus("Le bot ne peut pas jouer : aucune position valide pour le totem");
+                return;
+            }
 
-        int indexChoice = getRandom(0, 1);
+            // Choix et placement du totem
+            boolean totemPlaced = false;
+            while (!totemPlaced && !positionsValideTotem.isEmpty()) {
+                int indexTotem = getRandom(0, positionsValideTotem.size() - 1);
+                Position posTotem = positionsValideTotem.get(indexTotem);
 
-        if(indexChoice==0){
-            lastTotemPlay = new Totem(Mark.O);
+                if (game.isValidMove(posTotem, lastTotemPlay)) {
+                    game.playTotem(posTotem, lastTotemPlay);
+                    totemPlaced = true;
+                } else {
+                    positionsValideTotem.remove(indexTotem);
+                }
+            }
+
+            if (!totemPlaced) {
+                FxView.setStatus("Le bot n'a pas pu placer le totem");
+                return;
+            }
+
+            // Récupération et vérification des positions valides pour le pion
+            List<Position> positionsValidePawn = game.getFreeposPawn(lastTotemPlay);
+            if (positionsValidePawn.isEmpty()) {
+                FxView.setStatus("Le bot ne peut pas placer de pion : aucune position valide");
+                return;
+            }
+
+            // Choix et placement du pion
+            boolean pawnPlaced = false;
+            while (!pawnPlaced && !positionsValidePawn.isEmpty()) {
+                int indexpawn = getRandom(0, positionsValidePawn.size() - 1);
+                Position posPawn = positionsValidePawn.get(indexpawn);
+
+                try {
+                    game.playPawn(posPawn);
+                    pawnPlaced = true;
+                } catch (OxonoExecption e) {
+                    positionsValidePawn.remove(indexpawn);
+                }
+            }
+
+            if (!pawnPlaced) {
+                FxView.setStatus("Le bot n'a pas pu placer le pion");
+                return;
+            }
+
+            fxView.updateBoard(game);
+            FxView.setStatus("Le bot a joué son tour");
+
+        } catch (OxonoExecption e) {
+            FxView.setStatus("Erreur lors du tour du bot : " + e.getMessage());
         }
-        else{
-            lastTotemPlay = new Totem(Mark.X);
-        }
-
-        game.playTotem(posTotem,lastTotemPlay);
-        game.playPawn( posPawn);
-        fxView.updateBoard(game); // Mettez à jour la vue après l'action
     }
 
     public static int getRandom(int min, int max) {
-        int range = (max - min) + 1;
-        int random = (int) ((range * Math.random()) + min);
-        return random;
+        return min + (int)(Math.random() * ((max - min) + 1));
     }
 
     private void handleUndo() {
@@ -146,8 +188,6 @@ public class JeuFx implements Observer {
                 game.playPawn(position);
                 FxView.setStatus("Pion placé !");
                 isPlacingTotem = false;
-
-
                 return;
             }
 
@@ -196,8 +236,7 @@ public class JeuFx implements Observer {
 
         ComboBox<String> gameMode = new ComboBox<>();
         gameMode.getItems().addAll(
-                "Humain vs Humain",
-                "Humain vs IA Aléatoire"
+                "Humain vs Humain"
         );
         gameMode.setValue("Humain vs Humain");
 

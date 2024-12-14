@@ -70,7 +70,7 @@ public class BoardFx extends StackPane {
             }
         }
     }
-    public void highlightAccessiblePlaces(List<Position> positions, Totem totem) {
+    public void highlightAccessiblePlaces(List<Position> positions) {
         // Réinitialiser toutes les surbrillances
         clearHighlights();
 
@@ -93,6 +93,7 @@ public class BoardFx extends StackPane {
             }
         }
     }
+
 
     // Méthode auxiliaire pour réinitialiser les surbrillances
     public void clearHighlights() {
@@ -128,10 +129,6 @@ public class BoardFx extends StackPane {
         return gridPane;
     }
 
-//    public void resizeGrid(int newSize) {
-//        this.size = newSize;
-//        gridPane.getChildren().clear(); // Efface l'ancienne grille
-//        createGrid(); // Recrée la grille avec la nouvelle taille
-//    }
+
 
 }

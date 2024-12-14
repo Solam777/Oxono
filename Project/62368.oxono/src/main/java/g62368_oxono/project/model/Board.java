@@ -368,7 +368,13 @@ public class Board {
                 posValid.add(posPossible);
             }
         }
-        return posValid;
+        if (posValid.isEmpty()) {
+            posValid= allEmptyPositions();
+            return posValid;
+        }
+        else {
+            return posValid;
+        }
     }
 
 }

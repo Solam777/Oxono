@@ -1,6 +1,6 @@
 
 .root {
-    -fx-background-image: url('../images/mario-bg-pattern.jpg');
+   /* -fx-background-image: url('../images/mario-bg-pattern.jpg');*/
 }
 
 /* Board styles */

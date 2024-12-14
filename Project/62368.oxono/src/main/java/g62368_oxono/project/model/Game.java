@@ -44,10 +44,6 @@ public class Game implements Observable {
         notifyObservers(ObservableEvent.GAME_START);
     }
 
-    public Totem getLastMoveTotem() {
-        return lastMoveTotem;
-    }
-
     public Player getCurrentPlayer(){
         return currentPlayer;
     }
@@ -265,11 +261,5 @@ public class Game implements Observable {
   public List<Position> getFreeposPawn(Totem totem) {
       return board.getValidMovesPawn(totem);
   }
-
-    public boolean isAdjacent(Position pos1, Position pos2) {
-        int dx = Math.abs(pos1.x() - pos2.x());
-        int dy = Math.abs(pos1.y() - pos2.y());
-        return (dx <= 1 && dy <= 1) && !(dx == 0 && dy == 0);
-    }
 
 }

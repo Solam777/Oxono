@@ -12,7 +12,7 @@ public class OxonoApp extends Application {
     @Override
     public void start(Stage primaryStage) {
         Game game = new Game();
-        FxView fxView = new FxView();// Taille du plateau (exemple)
+        FxView fxView = new FxView();
         JeuFx controller = new JeuFx(game, fxView);
         controller.start();
 
@@ -23,7 +23,7 @@ public class OxonoApp extends Application {
         primaryStage.setTitle("Jeu OXONO");
         primaryStage.setScene(scene);
         primaryStage.show();
-        controller.showStartDialog();
+
     }
 
     public static void main(String[] args) {

@@ -2,21 +2,14 @@ package g62368_oxono.project.View;
 
 import g62368_oxono.project.Controller.JeuFx;
 import g62368_oxono.project.model.*;
-import javafx.fxml.FXMLLoader;
+import g62368_oxono.project.model.Observer.ObservableEvent;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
+import javafx.scene.control.*;
 import javafx.scene.layout.*;
-import javafx.stage.Modality;
-import javafx.stage.Stage;
-
-
-import java.awt.event.ActionEvent;
 import java.util.Arrays;
+import java.util.Optional;
 
 public class FxView  {
     private BoardFx boardFx;
@@ -29,12 +22,14 @@ public class FxView  {
     private Label playerTurnLabel;
     private static Label statusLabel;
     private Button playBot;
-
+   private  GameAlert gameAlert;
+   private int tailleTableau = 6;
 
     public FxView() {
-        createView();
+        createView(tailleTableau);
         root.getStylesheets().add(getClass().getResource("/style/style.css").toExternalForm());
     }
+
     public void setController(JeuFx controller) {
         boardFx.setController(controller);
     }
@@ -47,7 +42,7 @@ public class FxView  {
         return this.boardFx;
     }
 
-    public void createView() {
+    public void createView(int tailleTableau) {
         root = new VBox(30);
         root.setPadding(new Insets(25));
         root.setAlignment(Pos.CENTER);
@@ -57,7 +52,7 @@ public class FxView  {
 
         HBox header = Header();
         HBox boardGrid = new HBox();
-        boardFx = new BoardFx(6, 800, 600);
+        boardFx = new BoardFx(tailleTableau, 800, 600);
         boardGrid.setAlignment(Pos.CENTER);
 
         boardGrid.getChildren().add(boardFx.getGridPane());
@@ -205,15 +200,68 @@ public class FxView  {
         boardFx.updateBoard(game);
         playerTurnLabel.setText("Tour actuel: Joueur " + (game.getCurrentPlayer().getColor() == Color.PINK ? "Rose" : "Noir"));
     }
-//    private void clickShow(ActionEvent event) {
-//        Stage stage = new Stage();
-//        Parent root = FXMLLoader.load(
-//                FxView.class.getResource("YourClass.fxml"));
-//        stage.setScene(new Scene(root));
-//        stage.setTitle("My modal window");
-//        stage.initModality(Modality.WINDOW_MODAL);
-//        stage.initOwner(
-//                ((Node)event.getSource()).getScene().getWindow() );
-//        stage.show();
-//    }
+
+    public void gameWin(Game game) {
+        gameAlert = new GameAlert(Alert.AlertType.INFORMATION);
+        gameAlert.showAlert(game);
+    }
+
+    private static class GameSettings {
+        final int boardSize;
+        final int gameMode;
+
+        GameSettings(int boardSize, int gameMode) {
+            this.boardSize = boardSize;
+            this.gameMode = gameMode;
+        }
+    }
+
+    public void showStartDialog(Game game) {
+        Dialog<GameSettings> dialog = new Dialog<>();
+        dialog.setTitle("Nouvelle Partie");
+        dialog.setHeaderText("Choisissez les paramètres de jeu");
+
+        ButtonType startButtonType = new ButtonType("Commencer", ButtonBar.ButtonData.OK_DONE);
+        dialog.getDialogPane().getButtonTypes().addAll(startButtonType, ButtonType.CANCEL);
+
+        GridPane grid = new GridPane();
+        grid.setHgap(10);
+        grid.setVgap(10);
+        grid.setPadding(new javafx.geometry.Insets(20, 150, 10, 10));
+
+        ComboBox<Integer> boardSize = new ComboBox<>();
+        for (int i = 6; i <= 12; i++) boardSize.getItems().add(i);
+        boardSize.setValue(6);
+
+        ComboBox<String> gameMode = new ComboBox<>();
+        gameMode.getItems().addAll(
+                "Humain vs Humain"
+        );
+        gameMode.setValue("Humain vs Humain");
+
+        grid.add(new Label("Taille du plateau:"), 0, 0);
+        grid.add(boardSize, 1, 0);
+        grid.add(new Label("Mode de jeu:"), 0, 1);
+        grid.add(gameMode, 1, 1);
+
+        dialog.getDialogPane().setContent(grid);
+
+        dialog.setResultConverter(dialogButton -> {
+            if (dialogButton == startButtonType) {
+                return new GameSettings(boardSize.getValue(), gameMode.getSelectionModel().getSelectedIndex() + 1);
+            }
+            return null;
+        });
+
+        Optional<GameSettings> result = dialog.showAndWait();
+        result.ifPresent(settings -> {
+            tailleTableau = settings.boardSize;
+            System.out.println(tailleTableau);
+//            createView(tailleTableau);
+            game.initializeGame(tailleTableau);
+            setStatus("La partie commence! C'est au tour du joueur " +
+                    (game.getCurrentPlayer().getColor() == Color.PINK ? "Rose" : "Noir"));
+
+        });
+    }
 }

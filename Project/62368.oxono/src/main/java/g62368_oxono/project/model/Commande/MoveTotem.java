@@ -17,15 +17,17 @@ public class MoveTotem implements Command {
         this.board = board;
     }
 
-/*
-* totem move to where i will to*/
+    /**
+     * Executes the command by moving the totem to the target position.
+     */
     @Override
     public void execute() {
         board.setTotem(to, totem);
     }
 
-    /*
-    * totem just come back iitial pos*/
+    /**
+     * Undoes the command by moving the totem back to its initial position.
+     */
     @Override
     public void unexecute() {
         board.setTotem(from, totem);

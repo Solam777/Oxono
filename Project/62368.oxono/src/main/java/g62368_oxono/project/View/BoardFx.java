@@ -2,12 +2,9 @@ package g62368_oxono.project.View;
 
 import g62368_oxono.project.Controller.JeuFx;
 import g62368_oxono.project.model.*;
-import g62368_oxono.project.model.Observer.ObservableEvent;
 import javafx.geometry.Pos;
-import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
-
 import java.util.List;
 
 
@@ -15,19 +12,17 @@ public class BoardFx extends StackPane {
     private final int boardSize;
     private final GridPane gridPane;
 
-    public int getBoardSize() {
-        return boardSize;
-    }
-
-    public CellFx getCells() {
-        return cells;
-    }
-
     public final double cellSize; // Taille des cases
     private final CellFx cells; // Correction : final pour une meilleure structure
     private JeuFx controllerFx;
 
-
+    /**
+     * Constructs a {@code BoardFx} with the specified dimensions and board size.
+     *
+     * @param boardSize   the number of rows and columns on the board
+     * @param boardWidth  the width of the board
+     * @param boardHeight the height of the board
+     */
     public BoardFx(int boardSize, double boardWidth, double boardHeight) {
         this.boardSize = boardSize;
         this.cellSize = Math.min(boardWidth, boardHeight) / boardSize; // Taille d'une cellule
@@ -40,6 +35,11 @@ public class BoardFx extends StackPane {
         this.controllerFx = controller;
     }
 
+    /**
+     * Updates the visual representation of the board based on the current game state.
+     *
+     * @param game the current state of the game
+     */
     public void updateBoard(Game game) {
 
         gridPane.getChildren().clear();
@@ -70,6 +70,12 @@ public class BoardFx extends StackPane {
             }
         }
     }
+
+    /**
+     * Highlights the cells corresponding to accessible positions on the board.
+     *
+     * @param positions the list of positions to highlight
+     */
     public void highlightAccessiblePlaces(List<Position> positions) {
         // Réinitialiser toutes les surbrillances
         clearHighlights();
@@ -94,8 +100,9 @@ public class BoardFx extends StackPane {
         }
     }
 
-
-    // Méthode auxiliaire pour réinitialiser les surbrillances
+    /**
+     * Clears all highlighted cells on the board.
+     */
     public void clearHighlights() {
         gridPane.getChildren().forEach(node -> {
             if (node instanceof StackPane) {
@@ -111,6 +118,13 @@ public class BoardFx extends StackPane {
         });
     }
 
+    /**
+     * Retrieves the cell at the specified column and row.
+     *
+     * @param col the column index of the cell
+     * @param row the row index of the cell
+     * @return the {@code StackPane} representing the cell, or {@code null} if no cell is found
+     */
     private StackPane getCellAt(int col, int row) {
         for (javafx.scene.Node node : gridPane.getChildren()) {
             Integer nodeCol = GridPane.getColumnIndex(node);
@@ -125,10 +139,13 @@ public class BoardFx extends StackPane {
         return null;
     }
 
+    /**
+     * Retrieves the {@code GridPane} containing the board's layout.
+     *
+     * @return the {@code GridPane} representing the board
+     */
     public GridPane getGridPane() {
         return gridPane;
     }
-
-
 
 }

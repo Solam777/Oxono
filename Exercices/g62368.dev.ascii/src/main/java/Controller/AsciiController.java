@@ -115,11 +115,12 @@ public class AsciiController {
                         }
                         else if (matcherredo.matches()){
                             tab.redo();
+                            System.out.println("Dernière action rétablie.");
                         }
                         else
                         {
                             System.out.println("Commande invalide, réessayez.");
-                            System.out.println("Dernière action rétablie.");
+
                         }
                     }
                     break;

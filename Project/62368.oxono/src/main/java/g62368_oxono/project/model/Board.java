@@ -8,8 +8,7 @@ public class Board {
     private Position posTotemX;
     private Position posTotemO;
     private final int size;
-    Totem lastMoveTotem;
-    private Pawn recentPawnPlace;
+    Totem lastMoveTotem;;
 
     public Board(int size) {
         this.size = size;
@@ -17,17 +16,31 @@ public class Board {
         initialize();
     }
 
+    /**
+     * Initializes the board by placing the starting Totems on the center positions.
+     */
     public void initialize() {
-        posTotemX = new Position(2, 2);
-        posTotemO = new Position(3, 3);
+        posTotemX = new Position(size/2-1, size/2-1);
+        posTotemO = new Position(size/2, size/2);
         board[posTotemO.x()][posTotemO.y()] = new Totem(Mark.O);
         board[posTotemX.x()][posTotemX.y()] = new Totem(Mark.X);
     }
 
+    /**
+     * Returns the size of the board.
+     *
+     * @return the size of the board
+     */
     public int getSize() {
         return size;
     }
 
+    /**
+     * Returns the position of the last moved {@link Totem}.
+     *
+     * @param totem the {@link Totem} for which to get the position
+     * @return the position of the last moved {@link Totem}
+     */
     public Position getPosLastMoveTotem(Totem totem) {
         if (totem.getMark() == Mark.X) {
             return posTotemX =  getTotemPosition(Mark.X);
@@ -36,15 +49,23 @@ public class Board {
         }
     }
 
-    /*
-     * renvoie la position du totem
-     * */
+    /**
+     * Returns the position of a Totem based on its mark.
+     *
+     * @param mark the mark of the Totem (X or O)
+     * @return the position of the specified Totem
+     */
     public Position getTotemPosition(Mark mark) {
         return Mark.O == mark ? posTotemO : posTotemX;
     }
 
-    /*
-   place le totem sur le bord si toutes les conditions y sont*/
+    /**
+     * Validates and places a {@link Totem} on the board at the specified position.
+     *
+     * @param position the position where to place the {@link Totem}
+     * @param totem the {@link Totem} to place
+     * @throws OxonoExecption if the move is invalid
+     */
     public void placeTotem(Position position, Totem totem) {
         Position oldPosition = getTotemPosition(totem.getMark());
         validateMoveTotem(position, totem);
@@ -66,14 +87,23 @@ public class Board {
     }
 
 
-    /*
-     * verifie si où l'on veut placer son toteme est bien dans le board
-     * */
+    /**
+     * Checks if a specific position is inside the board.
+     *
+     * @param position the position to check
+     * @return true if the position is inside the board, false otherwise
+     */
     public boolean isInside(Position position) {
         return position.y() >= 0 && position.x() >= 0 && position.y() < size && position.x() < size;
     }
 
-    /*verifie si la postion est valid ou l'on veut placer notre totem ou sil est entrourre ou pas */
+    /**
+     * Validates a {@link Totem}'s move to the specified position.
+     *
+     * @param newPosition the new position for the {@link Totem}
+     * @param totem       the {@link Totem} to move
+     * @throws OxonoExecption if the move is invalid
+     */
     public void validateMoveTotem(Position newPosition, Totem totem) {
         if (!isInside(newPosition) || (!isEmpty(newPosition))) {
             throw new OxonoExecption("La position est en dehors des limites ou deja occupe");
@@ -94,13 +124,22 @@ public class Board {
         }
     }
 
+    /**
+     * Checks if a specific position is empty (contains no {@link Piece}).
+     *
+     * @param position the position to check
+     * @return true if the position is empty, false otherwise
+     */
     public boolean isEmpty(Position position) {
         return board[position.x()][position.y()] == null;
     }
 
-    /*
-     * verifie si la postion ou on va placer le pion sera encercle
-     * */
+    /**
+     * Checks if a specific position is surrounded by other {@link Piece}s.
+     *
+     * @param position the position to check
+     * @return true if the position is surrounded, false otherwise
+     */
     public boolean isSurrounded(Position position) {
         for (Direction dir : Direction.values()) {
             int newX = position.x() + dir.getX(); // on recupere le x de la direction
@@ -115,9 +154,12 @@ public class Board {
         return true;
     }
 
-    /*
-     * nous donnes les positions vide de chaque direction en fonctions de la postion
-     * */
+    /**
+     * Finds valid positions for a surrounded {@link Totem} to move to.
+     *
+     * @param position the position of the {@link Totem}
+     * @return a list of valid positions for the {@link Totem}
+     */
     public List<Position> movesIfTotemSurrounded(Position position) {
         List<Position> validPositions = new ArrayList<>();
         boolean anyEmptyFound = false;
@@ -154,6 +196,12 @@ public class Board {
     }
 
 
+    /**
+     * Finds valid positions for a non-surrounded {@link Totem} to move to.
+     *
+     * @param position the position of the {@link Totem}
+     * @return a list of valid positions for the {@link Totem}
+     */
     public List<Position> movesIfNotTotemSurrounded(Position position) {
         List<Position> emptyPositions = new ArrayList<>();
         for (Direction dir : Direction.values()) {
@@ -178,9 +226,11 @@ public class Board {
     }
 
 
-    /*
-     * une liste de toutes les positions vides du board
-     * */
+    /**
+     * Returns a list of all empty positions on the board.
+     *
+     * @return a list of all empty positions on the board
+     */
     public List<Position> allEmptyPositions() {
         List<Position> emptyPos = new ArrayList<>();
         for (int i = 0; i < getSize(); i++) {
@@ -193,14 +243,24 @@ public class Board {
         return emptyPos;
     }
 
-    /*
-     * verifie si la ligne est gagnante soit avec 4 couleur  ou 4 mark aligne */
+    /**
+     * Checks if a specific position is a winning position for a {@link Pawn}.
+     *
+     * @param position the position to check
+     * @param pawn the {@link Pawn} to check
+     * @return true if the position is a winning position for the {@link Pawn}, false otherwise
+     */
     public boolean isWin(Position position, Pawn pawn) {
         return checkLine(position.x(), pawn) || checkColumn(position.y(), pawn);
     }
 
-    /*
-     * check if each case in the line is same(about color or mark )*/
+    /**
+     * Checks if a specific line (row or column) contains a winning sequence of {@link Piece}s.
+     *
+     * @param x the index of the line (row or column) to check
+     * @param pawn the {@link Piece} to check
+     * @return true if the line contains a winning sequence of {@link Piece}s, false otherwise
+     */
     public boolean checkLine(int x, Pawn pawn) {
         int occurenceColor = 0;
         int occurenceMark = 0;
@@ -238,8 +298,13 @@ public class Board {
         return false; // Aucun alignement détecté
     }
 
-    /*
-     * check if each case in the column is same(about color or mark )*/
+    /**
+     * Checks if a specific column contains a winning sequence of {@link Piece}s.
+     *
+     * @param y the index of the column to check
+     * @param pawn the {@link Piece} to check
+     * @return true if the column contains a winning sequence, false otherwise
+     */
     public boolean checkColumn(int y, Pawn pawn) {
         int occurenceColor = 0;
         int occurenceMark = 0;
@@ -282,6 +347,13 @@ public class Board {
         return board[position.x()][position.y()];
     }
 
+    /**
+     * Validates and places a {@link Pawn} on the board at the specified position.
+     *
+     * @param position the position where to place the {@link Pawn}
+     * @param pawn the {@link Pawn} to place
+     * @throws OxonoExecption if the move is invalid
+     */
     public void placePawn(Position position, Pawn pawn) {
         if (lastMoveTotem == null) {
             throw new OxonoExecption("Aucun totem n'a été déplacé ou initialisé.");
@@ -308,7 +380,7 @@ public class Board {
         }
 
         board[position.x()][position.y()] = pawn;
-        recentPawnPlace = pawn;
+
         System.out.println("Pion placé à la position : " + position);
     }
 
@@ -323,28 +395,57 @@ public class Board {
        }
     }
 
+    /**
+     * Removes a {@link Pawn} from the board at the specified position.
+     *
+     * @param pawnPosition the position where to remove the {@link Pawn}
+     * @throws OxonoExecption if there is no {@link Pawn} at the specified position
+     */
     public void removePawn(Position pawnPosition) {
         if (!isEmpty(pawnPosition)) {
             board[pawnPosition.x()][pawnPosition.y()] = null;
         }
     }
+    /**
+     * Checks if a specific piece is a Totem.
+     *
+     * @param piece the piece to check
+     * @return true if the piece is a Totem, false otherwise
+     */
     public boolean isTotem(Piece piece) {
         return piece instanceof Totem;
     }
 
+    /**
+     * Sets a Totem on the board at the specified position.
+     *
+     * @param position the position where to place the Totem
+     * @param totem the Totem to place
+     */
     public void setTotem(Position position, Totem totem){
-        Position old =getTotemPosition(totem.getMark());
+        Position old = getTotemPosition(totem.getMark());
 
         board[position.x()][position.y()] = totem;
 
         updateTotem(position, totem, old);
-
     }
 
-    public void setPawn(Position position, Pawn pawn) {
-        board[position.x()][position.y()] = pawn;
-    }
+/**
+ * Sets a Pawn on the board at the specified position.
+ *
+ * @param position the position where to place the Pawn
+ * @param pawn the Pawn to place
+ */
+public void setPawn(Position position, Pawn pawn) {
+    board[position.x()][position.y()] = pawn;
+}
 
+    /**
+     * Returns a list of valid positions for a {@link Totem} to move.
+     *
+     * @param totem the {@link Totem} for which to get the valid moves
+     * @return a list of valid positions for the {@link Totem} to move
+     */
     public List<Position> getValidMovesTotem(Totem totem) {
         Position totemPosition = getTotemPosition(totem.getMark());
         if (isSurrounded(totemPosition)) {
@@ -354,6 +455,12 @@ public class Board {
         }
     }
 
+    /**
+     * Returns a list of valid positions for a {@link Pawn} to move.
+     *
+     * @param totem the {@link Totem} for which to get the valid moves
+     * @return a list of valid positions for the {@link Pawn} to move
+     */
     public List<Position> getValidMovesPawn(Totem totem) {
         Position positionTotem = getPosLastMoveTotem(totem);
         List<Position> posValid = new ArrayList<>();
@@ -377,4 +484,13 @@ public class Board {
         }
     }
 
+    /**
+    * Sets a Pawn on the board at the specified position.
+    *
+    * @param position the position where to place the Pawn
+    * @param pawn the Pawn to place
+    */
+    public void setpawn(Position position, Pawn pawn) {
+    board[position.x()][position.y()] = pawn;
+    }
 }

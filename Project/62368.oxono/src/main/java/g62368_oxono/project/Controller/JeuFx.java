@@ -7,21 +7,15 @@ import g62368_oxono.project.model.*;
 import g62368_oxono.project.model.Observer.ObservableEvent;
 import g62368_oxono.project.model.Observer.Observer;
 import g62368_oxono.project.model.Strategy.RandomStrategy;
-
-import javafx.scene.control.*;
-import javafx.scene.layout.GridPane;
-
 import java.util.List;
-import java.util.Optional;
 
 public class JeuFx implements Observer {
     private final FxView fxView;
-    private Game game;
+    private final Game game;
     RandomStrategy randomStrategy;
     private Position clickTotemPos;
     private boolean isPlacingTotem;
     private Totem lastTotemPlay;
-    private List<Position> accessiblePositions;
 
     public JeuFx(Game game, FxView view) {
         this.game = game;
@@ -32,6 +26,9 @@ public class JeuFx implements Observer {
         setupEventHandlers();
     }
 
+    /**
+     * Sets up event handlers for the game controls.
+     */
     private void setupEventHandlers() {
         // Gestionnaire pour Undo
         fxView.getUndoButton().setOnAction(e -> handleUndo());
@@ -45,11 +42,17 @@ public class JeuFx implements Observer {
         fxView.getPlayBot().setOnAction(e -> handlePlayBot());
     }
 
+    /**
+     * Handles the bot's turn by delegating the move to a random strategy.
+     */
     private void handlePlayBot() {
         randomStrategy.play(fxView, game);
     }
 
-
+    /**
+     * Handles the undo action, reverting the last move made in the game.
+     * Updates the game board in the FxView.
+     */
     private void handleUndo() {
         try {
             game.undo();
@@ -60,6 +63,10 @@ public class JeuFx implements Observer {
         }
     }
 
+    /**
+     * Handles the redo action, reapplying the last undone move.
+     * Updates the game board in the FxView.
+     */
     private void handleRedo() {
         try {
             game.redo();
@@ -70,15 +77,26 @@ public class JeuFx implements Observer {
         }
     }
 
+    /**
+     * Handles the quit action by notifying the user and ending the game.
+     */
     private void handleQuit() {
         FxView.setStatus("Le joueur a abandonné la partie.");
         game.quitGame();
     }
-
+    /**
+     * Starts the game.
+     */
     public void start() {
        fxView.showStartDialog(game);
     }
 
+    /**
+     * Handles a click event on the game board.
+     * Manages totem movement and pawn placement based on the game state.
+     *
+     * @param position The Position object representing the clicked cell on the board.
+     */
     public void handleClick(Position position) {
         try {
             Piece clickedPiece = game.getPiece(position);
@@ -89,7 +107,7 @@ public class JeuFx implements Observer {
                     clickTotemPos = position;
                     lastTotemPlay = (Totem) game.getPiece(clickTotemPos);
 
-                    accessiblePositions = game.getFreeposTotem((Totem) clickedPiece);
+                    List<Position> accessiblePositions = game.getFreeposTotem((Totem) clickedPiece);
                     fxView.getBoardFx().highlightAccessiblePlaces(accessiblePositions);
                     FxView.setStatus("Sélectionnez une destination pour le totem");
                     return;
@@ -135,6 +153,11 @@ public class JeuFx implements Observer {
         fxView.updateBoard(game);
     }
 
+    /**
+     * Updates the game view based on the observed event.
+     *
+     * @param event The observed event.
+     */
     @Override
     public void update(ObservableEvent event) {
         switch (event) {
@@ -142,13 +165,16 @@ public class JeuFx implements Observer {
 
             case PLACE_PAWN:
                 fxView.updateBoard(game);
-
                 fxView.updateRacks(game.getRemainingPawns());
                 break;
             case UNDO:
+                fxView.updateBoard(game);
+                break;
+            case REDO:
+                fxView.updateBoard(game);
+                break;
             case MOVE_TOTEM:
                 fxView.updateBoard(game);
-
                 break;
             case WIN:
                 fxView.gameWin(game);
@@ -156,6 +182,11 @@ public class JeuFx implements Observer {
             case QUIT:
                 FxView.setStatus("Le jeu est terminé.");
                 break;
+
+            case DRAW:
+                fxView.gameDraw(game);
+                break;
         }
+
     }
 }

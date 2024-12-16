@@ -10,5 +10,4 @@ public enum ObservableEvent {
     QUIT,
     DRAW;
 
-
 }

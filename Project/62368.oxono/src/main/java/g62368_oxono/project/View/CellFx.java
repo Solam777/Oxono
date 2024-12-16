@@ -8,6 +8,11 @@ import javafx.scene.paint.Color;
 public class CellFx extends StackPane {
 
 
+    /**
+     * Creates a new cell with predefined size and styling.
+     *
+     * @return a {@code StackPane} representing the cell
+     */
     public StackPane createCell(){
         // Définir la taille de la cellule
         StackPane cell = new StackPane();

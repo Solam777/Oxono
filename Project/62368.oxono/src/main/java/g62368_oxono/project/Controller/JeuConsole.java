@@ -8,6 +8,13 @@ import g62368_oxono.project.model.Observer.Observer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+/**
+ * Constructs a JeuConsole object with a specified game and console view.
+ * Initializes a new game instance and sets up the observer pattern.
+ *
+ * param game the Game instance to be used
+ * param view the ConsoleView instance to interact with the user
+ */
 public class JeuConsole implements Observer {
     private Game game;
     private ConsoleView view;
@@ -17,7 +24,10 @@ public class JeuConsole implements Observer {
         game.addObserver(this);
     }
 
-
+    /**
+     * Starts the game by initializing it, getting user input, and controlling the main game loop.
+     * The game continues until the user decides to quit.
+     */
     public void start() {
     int boardsize = view.getBoardSize();
     boolean quit = false;
@@ -32,9 +42,10 @@ public class JeuConsole implements Observer {
         }
     }
 }
-
-
-
+    /**
+     * Runs the main game logic, handling turns, checking for victory, draws, and player switching.
+     * Displays the game board and manages errors.
+     */
     private void play() {
         boolean victory = false;
         do {
@@ -59,35 +70,23 @@ public class JeuConsole implements Observer {
         } while (!victory && !game.isDraw());
     }
 
-
-    private void placePawnOX(String mark, String color, int x, int y) {
-        if (mark.equalsIgnoreCase("x")) {
-            if (color.equalsIgnoreCase("b")) {
-                game.playPawn(new Position(x, y));
-                System.out.println("placement du pion X en (" + x + "," + y + ")");
-            } else if (color.equalsIgnoreCase("p")) {
-
-                game.playPawn(new Position(x, y));
-                System.out.println("Placement du pion X en (" + x + "," + y + ")");
-            } else {
-                System.out.println("Couleur invalide.");
-            }
-        } else if (mark.equalsIgnoreCase("o")) {
-            if (color.equalsIgnoreCase("b")) {
-                game.playPawn(new Position(x, y));
-                System.out.println("Placement du pion O en (" + x + "," + y + ")");
-            } else if (color.equalsIgnoreCase("p")) {
-                game.playPawn(new Position(x, y));
-                System.out.println("Placement du pion O en (" + x + "," + y + ")");
-            } else {
-                System.out.println("Couleur invalide.");
-            }
-        } else {
-            System.out.println("Marque invalide.");
-        }
+    /**
+     * Places a pawn on the game board at the specified coordinates.
+     *
+     * @param x the x-coordinate where the pawn will be placed
+     * @param y the y-coordinate where the pawn will be placed
+     */
+    private void placePawnOX(int x, int y) {
+        game.playPawn(new Position(x, y));
     }
 
-
+    /**
+     * Places a totem on the game board at the specified coordinates with a given mark (X or O).
+     *
+     * @param mark the mark (X or O) representing the totem type
+     * @param x the x-coordinate where the totem will be placed
+     * @param y the y-coordinate where the totem will be placed
+     */
     private void placeTotem(String mark, int x, int y) {
         if (mark.equalsIgnoreCase("x")) {
             game.playTotem(new Position(x, y), new Totem(Mark.X));
@@ -101,12 +100,15 @@ public class JeuConsole implements Observer {
     }
 
 
-    /*input qui demande quoi faire a lutilsateur et l'execute si cest correct */
+    /**
+     * Requests an action from the user and executes it if valid.
+     * Parses user input for commands and handles them accordingly.
+     */
     private void whatdo() {
         String regexTotem = "^(\\d+)\\s(\\d+)\\s([XO])$";
         Pattern patternTotem = Pattern.compile(regexTotem);
 
-        String regexPawn = "^pawn\\s([XO])\\s([bBpP])\\s(\\d+)\\s(\\d+)$";
+        String regexPawn = "^pawn\\s(\\d+)\\s(\\d+)$";
         Pattern patternPawn = Pattern.compile(regexPawn);
 
         boolean isRunning = true;
@@ -138,7 +140,10 @@ public class JeuConsole implements Observer {
         }
     }
 
-    // Gestion des commandes
+
+    /**
+     * Handles the "undo" command by reverting the last game action if possible.
+     */
     private void handleUndo() {
         if (game.canUndo()) {
             game.undo();
@@ -149,6 +154,9 @@ public class JeuConsole implements Observer {
         }
     }
 
+    /**
+     * Handles the "redo" command by re-executing the last undone game action if possible.
+     */
     private void handleRedo() {
         if (game.canRedo()) {
             game.redo();
@@ -159,11 +167,19 @@ public class JeuConsole implements Observer {
         }
     }
 
+    /**
+     * Handles the "give up" command by displaying a quit message and terminating the game.
+     */
     private void handleGiveUp() {
         view.showQuitMessage();
         System.exit(0);
     }
 
+    /**
+     * Processes a totem placement command from user input using a regex matcher.
+     *
+     * @param matcherTotem the Matcher object containing parsed totem command information
+     */
     private void handleTotemCommand(Matcher matcherTotem) {
         int x = Integer.parseInt(matcherTotem.group(1));
         int y = Integer.parseInt(matcherTotem.group(2));
@@ -179,14 +195,18 @@ public class JeuConsole implements Observer {
         }
     }
 
+    /**
+     * Processes a pawn placement command from user input using a regex matcher.
+     *
+     * @param matcherPawn the Matcher object containing parsed pawn command information
+     */
     private void handlePawnCommand(Matcher matcherPawn) {
-        String mark = matcherPawn.group(1);
-        String color = matcherPawn.group(2);
-        int x = Integer.parseInt(matcherPawn.group(3));
-        int y = Integer.parseInt(matcherPawn.group(4));
+
+        int x = Integer.parseInt(matcherPawn.group(1));
+        int y = Integer.parseInt(matcherPawn.group(2));
 
         try {
-            placePawnOX(mark, color, x, y);
+            placePawnOX(x, y);
             view.displayBoard(game);
             view.displayRack(game.getRemainingPawns());
         } catch (OxonoExecption e) {
@@ -194,7 +214,11 @@ public class JeuConsole implements Observer {
         }
     }
 
-
+    /**
+     * Updates the game view based on observable events from the game model.
+     *
+     * @param event the ObservableEvent instance representing the type of event that occurred
+     */
     @Override
     public void update(ObservableEvent event) {
         switch (event) {

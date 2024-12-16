@@ -7,8 +7,6 @@ public class ImageFx {
     public static Image getImagePath(String fileName) {
         String path = "/images/";
         String fullPath = path + switch (fileName) {
-            case "Background" -> "box-background.png";
-            case "CenterBox" -> "center-box-background.png";
             case "TotemX" -> "totemX.PNG";
             case "TotemO" -> "totemO.PNG";
             case "PawnBlackX" -> "pawnBlackX.png";

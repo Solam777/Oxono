@@ -28,9 +28,5 @@ Dès qu'un joueur arrive à aligner 4 pièces de sa couleur ou 4 pièces avec le
 
 ---
 
-## ⚙️ Installation
 
-1. Cloner le dépôt :  
-   ```bash
-   git clone https://github.com/Solam777/Oxono.git
   

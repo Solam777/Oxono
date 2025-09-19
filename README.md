@@ -26,7 +26,6 @@ Dès qu'un joueur arrive à aligner 4 pièces de sa couleur ou 4 pièces avec le
 
 <img width="1855" height="1010" alt="image" src="https://github.com/user-attachments/assets/798158a2-bc0f-44b2-b617-e0ce40866908" />
 
----
 
 
   

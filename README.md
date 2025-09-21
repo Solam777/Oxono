@@ -84,8 +84,7 @@ The **Undo/Redo** features allow players to step back or replay moves, and the b
 ---
 
 ## Class Diagram
-
-![UML Class Diagram](A_UML_class_diagram_visualizes_the_relationships_a.png)
+<img width="1024" height="1536" alt="ChatGPT Image Sep 21, 2025, 04_49_21 PM" src="https://github.com/user-attachments/assets/37057f2b-9de6-41d8-aeac-921f110c65ed" />
 
 ---
 
